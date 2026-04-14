@@ -1,0 +1,96 @@
+\section{TODO For Final Experiment}
+  \begin{todolist}
+    \item Investigate why the medium cache has a calculatedSize of 350000 in evictions.
+  \end{todolist}
+\textbf{Planned figures:}
+\begin{todolist}
+    \item unindexed-cache, indexed-cache, estimate-indexed-cache cactus plot
+    \item Same but for optimized join plan computed prior to execution. (should be just a config parameter in experiment)
+    \item (Optional) Correlation between cache hit rate and execution time (also for default but just use the x-values of the other correlation plot as 'hitrate' values
+    \item Average eviction percentage over sequences for different cache sizes. (Use cumulative value)
+    \item Average execution time of cache approaches vs default (Again cumulative)
+    
+    \item (If caching still performs poorly) x-axis: simulated cache-hit rate, y-axis query execution time (for single template). For bad join plan / good join plan.
+
+    \item \textbf{Benchmark tests and figures}:
+    
+    \item Hitrate following certain templates (within a session only) (based on scatter plot and correlation)
+    \item Same but without QLever based sequence generation
+    
+    \item Hitrate after session switch (switch new, switch old)
+    \item Hitrate after session switch (without probability based switching) 
+
+    \item Within refinement sequence hitrate
+    \item Cache performance within refinement sequence compared to default (hitrate, evictions) show average per step (so first refine step second etc) (use cumulative)
+    
+    \item 
+    \item Appendix: individual sequences
+    \item 
+  \end{todolist}
+
+\textbf{Journal extension}
+\begin{todolist}
+    \item Statistical summaries of data for join planning
+    \item Cache-based cardinality estimation using offline traversal
+    \item Disk-based cache
+    \item Adaptive join + caching of documents
+    \item Additional experiments testing cache benchmark
+\end{todolist}
+
+\section{Introduction}
+Centralizing data can simplify query processing, but in many real-world situations, it conflicts with privacy requirements and fine-grained access controls.
+Structured decentralized ecosystems such as Solid~\cite{sambra2016solid} and Mastodon~\cite{raman2019challenges} encourage users to keep their own data in small, independent stores that follow shared data models. 
+This approach strengthens user autonomy, yet it makes query execution more difficult because engines must identify and query many heterogeneous data sources, each with its own access policies.
+
+Traditional federated querying approaches~\cite{schwarte2011fedx,schmidt2011fedbench,heling2022federated} support decentralization of sources, but typically assume a small (10-100) set of well-described and consistently available endpoints~\cite{dang2023fedshop}. 
+These assumptions fail once data is spread across thousands of small units that enforce local access-control policies.
+In addition, enforcing fine-grained access control policies~\cite{esteves2021odrl} on large sources with expressive interfaces introduces notable overhead~\cite{padia2015attribute}, making standard approaches unsuitable for highly decentralized environments.
+
+Newer decentralized environments, such as Solid, often expose data as lightweight HTTP resources~\cite{verborgh2016triple} instead of highly expressive query interfaces. 
+Many of these resources are not known in advance and can only be discovered during query execution. 
+Their simplicity lowers the cost of enforcing fine-grained controls.
+This setting requires a federation model that can operate over a very large number of small sources, many of which may be encountered at runtime, without relying on prior aggregation. 
+Traditional federated approaches are insufficient in this setting due to the assumption of a small number of large endpoints.
+
+Link Traversal-based Query Processing (LTQP)~\cite{hartig2009executing} fits these needs. 
+It discovers documents incrementally by following URIs encountered during execution, starting from an initial set of seed documents provided by either the user or the query. 
+Its link-driven, asynchronous traversal supports fine-grained permissions and avoids the requirement to know the entire data distribution beforehand.
+
+However, the fact that LTQP discovers documents incrementally creates significant challenges for efficient execution. 
+Using the traditional optimize-then-execute paradigm is difficult, as the query itself determines which data will be accessed. 
+As a result, the optimizer has no prior knowledge of the relevant data until the query’s traversal has already begun.
+
+Some approaches optimize query execution without prior knowledge by using adaptive query processing~\cite{hanski2025link} and zero-knowledge query planning~\cite{hartig2011zero}. 
+These yield modest but inconsistent performance gains, depending on the decentralized environment and the heuristics used~\cite{taelman2023link}.
+However, other aspects of zero-knowledge LTQP optimization, such as link prioritization~\cite{hartig2016walking},
+are unlikely to improve query result arrival times in emerging decentralized environments~\cite{eschauzier2025revisiting}.
+
+Consequently, other works explore using precomputed server-side information as prior knowledge 
+or relevance indexes to efficiently execute LTQP queries~\cite{tam2024opportunities,umbrich2011comparing,hanski2024observations}.
+While these approaches offer greater performance benefits, they require the server to maintain these indexes.
+This raises the cost of serving resources and complicates privacy and access control.
+
+To avoid this server-side overhead, engines can derive prior knowledge directly on the client.
+In decentralized settings, LTQP is inherently client-side, with one engine instance serving a single user.
+As users issue sequences of potentially correlated queries, the engine can identify frequently accessed data and its characteristics.
+This enables engines to implement \emph{personalized} query optimization algorithms that leverage these access patterns to acquire the necessary prior knowledge.
+
+% TODO: ChatGPT
+Benchmarking these approaches requires a benchmark that reflects the query sequences and correlations that LTQP engines may encounter when used by real clients over real data.
+Existing benchmarks such as WatDiv~\cite{alucc2014diversified} and BSBM~\cite{bizer2011berlin} mainly instantiate multiple versions of the same query template and run them sequentially, often with repetitions to reduce statistical noise.
+This paradigm is not sufficient for evaluating client-side query optimization, because it either overstates performance due to repeated executions of the same query or template, or understates it when these instantiations are randomly mixed to avoid such overestimation.
+
+In caching literature, which can be viewed as a form of personalized query optimization, the main evaluation methods are simulated micro benchmarks~\cite{martin2010improving,hartig2011caching} and macro benchmarks~\cite{williams2011enabling,folz2016cyclades,hartig2011caching,chatzopoulos2022atrapos,papailiou2015graph} that use query sequences.
+These simulated benchmarks are often created specifically for a single paper, leading to a fragmented landscape of benchmarking methodology. 
+Whenever possible, real query sequences are used~\cite{hartig2012populating,lorey2013caching,zhang2016secf}.
+For centralized SPARQL query optimization, such query logs~\cite{berendt2013usewod2013,picalausa_what_2011,bonifati_darql_2018,stadler2024lsq} are publicly available. 
+However, for personalized query optimization in LTQP, real-world query logs from applications built on structured decentralized environments are not yet available. 
+To avoid the fragmented evaluation practices seen in caching literature, we need a benchmark that can simulate such query sequences in a way that is representative of real-world usage.
+
+In this paper, we address this gap in benchmarking literature by extending SolidBench~\cite{taelman2023link}, an existing LTQP benchmark, to generate query sequences.
+These sequences capture three query engine usage patterns identified in the literature on social network applications, which SolidBench simulates, as well as patterns observed in real-world SPARQL query logs.
+This extension allows researchers to evaluate personalized query optimization techniques against patterns they are likely to encounter when these methods are deployed in real client-facing applications.
+
+To test our benchmark, we implement three caching strategies in the LTQP engine Comunica~\cite{taelman2018comunica,taelman2023link}.
+These strategies are intentionally simple, but they provide a clear view of the benchmark’s performance characteristics and will demonstrate (insert here when results are in).
+\todo{Add summary of main contributions to this section at the end if space permits}

@@ -1,0 +1,133 @@
+\section{Query Sequence Benchmark}
+In this section, we outline the SolidBench~\cite{taelman2023link} benchmark, which we use as base benchmark, our method for simulating the patterns from literature, and the resulting hyperparameters.
+Our resource contribution consists of extensions to three aspects of the SolidBench benchmark generator:
+\begin{itemize}
+    \item \textbf{Query generator}: We extend the query generator to use the previously mentioned extensions to create realistic query sequences, based on real-world usage patterns.
+    \item \textbf{Dataset generator}: We extend existing data generation to produce similarities between created users in the benchmark.
+    \item \textbf{Benchmark runner}: We integrate this into the existing benchmark runner of Solidbench to easily create new sequence-based experiments.
+\end{itemize}
+
+% TODO: Possibly remove I don't really like this part that much.
+% \subsection{Requirements}
+% This section outlines some requirements for a benchmark that aims to simulate real-world client-specific query usage patterns.
+
+% \textbf{Representative}
+% The simulated patterns should reflect realistic client-side behavior as closely as possible, given the available evidence. Even if true query logs are unavailable, the benchmark should approximate behavior supported by empirical findings from related domains.
+
+% \textbf{Reproducible}
+% The benchmark must be reproducible. Any stochastic process used to generate query sequences should produce identical results when the same configuration and seed are used.
+
+% \textbf{Configurable}
+% The benchmark should allow configuration of the strength and structure of simulated usage patterns. Since the benchmark is based on possibly incomplete knowledge of client behavior, the benchmark should allow enough flexibility to change aspects of the usage patterns.
+
+% \textbf{Transparent and Inspectable}
+% The benchmark generation process should be easy to inspect and understand. Concretely, this means that the patterns present in the sequence should be identifiable and allow for detailed analysis of the resulting performance characteristics
+
+\subsection{Base Benchmark}
+
+We extend SolidBench~\cite{taelman2023link} to create the query sequence-based benchmark. SolidBench is a benchmark designed to simulate a realistic decentralized environment based on the Solid ecosystem, 
+and provide a realistic workload that simulates a Solid application that reads data from one or more vaults. 
+The benchmark queries are built using the choke point-based design methodology from the Linked Data Benchmark Council~\cite{angles2014linked}. 
+The simulated dataset is the Social Network Benchmark (SNB)~\cite{erling2015ldbc,angles2020ldbc}, 
+and the queries are from the \textit{interactive} workload of SNB (short and complex), with additional templates, called discover, specifically built to cover link-related choke points.
+such as Link Traversal Query Processing (LTQP), within simulated decentralized Solid environments.
+
+\subsection{Simulation Methodology}
+Our simulation relies on the patterns identified in the literature. This subsection details how we integrate each pattern into the constructed query sequences.
+
+\subsubsection{Logical Query Sessions}
+To model logical sessions, we first group queries into four broad topics: messages by a specific person, forum information, person attributes (e.g., name and location), and message attributes. 
+Aligning with our literature review, we assume that the sequence of query templates in a decentralized environment depends on the results of the preceding query. 
+By identifying the possible output types of each query template, we construct a set of valid subsequent templates, effectively forming a directed graph of query progression within a logical session.
+
+Furthermore, literature shows that within a query session, the specific \emph{instantiation values} of a template are determined by the previous query's result set.
+To realistically simulate this `click-through` behavior, we execute centralized equivalents of the underlying LDBC SNB queries using QLever~\cite{bast2017qlever}.
+The result set of a given query is randomly sampled to provide the instantiation values for the subsequent query template.
+If a query returns empty results, we fall back to our default template instantiation methodology (Section \ref{ss:userinterests}).
+
+Finally, we simulate logical session switching.
+Based on web browsing literature, for each sequence we sample the session switching probability from a log-normal with mean 15\%. 
+For each new query generation in a sequence we switch sessions based on that sampled probability.
+When a switch occurs, the engine chooses with equal probability either to resume an existing session or to start a new one.
+New sessions use the default instantiation approach, whereas resumed sessions derive their next instantiation values from the last executed query within that specific session.
+To avoid generating repeat queries and to maintain an expected uniform distribution of query template instantiations, we explicitly exclude backtracking from our benchmark model.
+
+\subsubsection{User interest modeling}
+\label{ss:userinterests}
+
+Literature shows that individuals interact more frequently with peers sharing similar interests \cite{mitzlaff2013user}. 
+To simulate this we use the characteristics of the LDBC dataset, which is fragmented by SolidBench into pods. 
+The underlying LDBC dataset already simulates realistic user preferences~\cite{erling2015ldbc}, we use each user's stated interests to replicate this real-world interaction pattern.
+
+The LDBC data generator, Datagen, first creates person profiles containing interests, university attendance, workplaces, and a target connection count.
+This connection count follows a degree distribution similar to Facebook's. 
+Datagen then evaluates demographic similarities and interest overlaps.
+Users sharing specific interests, workplaces, or educational backgrounds have a significantly higher probability of connecting. 
+This mechanism prevents purely random network creation.
+
+We exploit this realistic, interest-driven network topology. 
+We use similarity scores to generate template instantiation values for the first query in each logical session (subsequent templates in a session use answers from previous queries).
+
+Our approach constructs an interest vector for each person:
+\begin{align}
+    v_{u} = (c^{i}_{1}, \dots, c^{i}_{n}, c^{s}_{1}, \dots, c^{s}_{m}),
+\end{align}
+
+where $c_{j}^{i}=1$ if the user has stated interest $j$, and $c^{s}_{k}=1$ if the user completed study $k$. For each sequence, we randomly select a base person $k$ and calculate the cosine similarity between the vector representation of $k$ and all other users.
+
+We generate template instantiation values with probabilities proportional to these similarity scores, applying a softmax function with temperature $T$:
+
+\begin{align}
+   P(c_{i,k}) = \frac{e^{s_i / T}}{\sum_{j=1}^{K} e^{s_j / T}},
+\end{align}
+
+where $s_i$ is the similarity score for candidate person $i$, and $K$ is the total number of persons in the dataset. To accelerate query generation and avoid expensive computations at large scale factors, we restrict the softmax operation to the top $N$ candidate entities.
+
+Finally, for queries requiring non-person instantiation values (such as posts or activities), we base our calculations on the person who created that content.
+
+\subsubsection{Refinement Patterns}
+The benchmark simulates query refinement patterns by randomly applying composable query transformations to an instantiated query template. 
+Following our literature review we speficically focus on x types of transformations.
+
+To ensure we generate meaningful transformations, that change the actual attributes of the query execution plan,
+rather than adding a simple triple with a one-to-one relation with the original query-result set, 
+we follow a choke point-based design methodology \cite{angles2014linked} for defining substitution configurations. 
+We identify the following choke points for caching systems in the context of query planning for LTQP, 
+which are related to the original chokepoints identified by the SolidBench benchmark~\cite{taelman2023link}.
+
+\begin{enumerate}
+    \item \textbf{P.1} - Addition or removal of a selective filter. The system will require prior knowledge to adjust the query plan effectively and estimate the selectivity of the filter
+    \item \textbf{P.2} - Addition or removal of UNION or OPTIONAL clauses, which change whether a FILTER can be pushed down or not.
+    \item \textbf{P.3} - Addition or removal of selective triple patterns when joined with the rest of the query
+    \item \textbf{P.4} - Addition or removal of nonselective triple patterns when joined with the rest of the query.
+\end{enumerate}
+
+In addition to refinement patterns influencing the query planning of LTQP engines, these can also influence the traversal aspects of a query. We identify the following chokepoints:
+
+\begin{enumerate}
+    \item \textbf{T.1} - Query refinement expands or contracts the reachable sub-web to query due to predicate additions
+    \item \textbf{T.2} - Query refinement changes the reachable sub-web due to the substitution of the traversal starting point.
+    \item \textbf{T.3} - Query refinement changes the number of hops required to obtain the relevant data for the query, corresponding to changes in SolidBench's choke points L.1 - L.6 \cite{taelman2023evaluation}.
+    \item \textbf{T.4} - Query refinement changes the usability of indexes, like typeIndexes, equivalent to changes in L.8 \cite{taelman2023evaluation}.
+\end{enumerate}
+
+The benchmark allows users to define custom query refinement patterns using JSON files, alongside provided default configurations.
+The default configurations, documentation, and pattern descriptions are available on \href{https://github.com/RubenEschauzier/SolidBench.js/tree/feature/user-based-query-sequences/templates/refinements}{GitHub}.
+
+The generator applies refinements sequentially to a base query template (from SolidBench).
+By default, every refinement pattern includes a reciprocal ``undo'' operation.
+Supported refinement operators include:
+
+\begin{itemize}
+    \item \textbf{OPTIONAL and UNION blocks}: Adding new blocks or inserting triples into existing ones (including specific UNION branches).
+    \item \textbf{Basic Graph Patterns (BGPs)}: Adding new triples to existing BGPs.
+    \item \textbf{FILTER statements}: Appending new query constraints.
+    \item \textbf{Value substitution}: Replacing template instantiation values to begin traversal from a different seed document.
+\end{itemize}
+
+The generator also supports variable instantiation within refinements.
+Through configuration files, users can bind variables present in the refinement patterns to specific values.
+This configuration-driven approach ensures the query generator remains highly flexible and extensible.
+
+\TODO{Explain the connection with the literature (specifically the olaf paper)}
+\subsection{Hyperparameters}

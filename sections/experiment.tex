@@ -1,0 +1,19 @@
+\section{Experiment Setup}
+\todo{Fill in numbers of generated data}
+To test our benchmark we generate a SolidBench dataset with default scale = $0.1$, resulting in x triples over y pods.
+For the query sequence generation, we generate 6 sequences with in total $136$ query instantiations. The hyperparameters used for the generation are outlined in Table \ref{tab:hyperparameters}.
+
+The purpose of our experiment is two-fold, one is to evaluate the characteristics of the simulated query sequences. 
+Specifically, the impact our three benchmark design choices have on the correlations between queries. 
+For caching-based algorithms, this correlation is primarily measured in the \textit{hit rate} and \textit{evictions}, thus to evaluate our benchmark we will investigate these metrics.
+The other is to evaluate the actual effectiveness of the implemented caching approaches in a single-threaded link traversal engine.
+While caching is not a new concept, the introduced caching approaches have not been rigorously tested in the single threaded execution environment of Comunica.
+Thus, we can immediately use our proposed benchmark to investigate the performance characteristics of our proposed caching.
+
+\subsection{Cache Hit Rate Experiment}
+To investigate the theoretical performance benefits of caching in link traversal, we additionally run experiments with synthetically set cache hit rates.
+
+\todo{Explain the experiment}
+
+This experiment will not only provide new insights into the possible benefits of caching approaches as different levels of performance, it will also show that for a given average hitrate in a sequence the overhead of evictions and cache management costs, as this cost is excluded from the synthetic hitrate experiments.
+Thus, giving a more complete view of the performance landscape of such approaches and the realism of our proposed benchmark.

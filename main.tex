@@ -1,0 +1,95 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage{enumitem,amssymb}
+\usepackage{amsmath} 
+
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+\usepackage{hyperref}
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+\usepackage{color}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+% \urlstyle{rm}
+%
+
+\input{reviewing}
+
+\begin{document}
+%
+\title{Benchmarking User-Specific Link Traversal Query Optimization: Evidence-Based Simulation of Decentralized Query Patterns } 
+\author{Ruben Eschauzier\inst{1}\orcidID{0000-0002-6475-806X} \and
+Ruben Taelman\inst{1}\orcidID{0000-0001-5118-256X}}
+
+\institute{Department of Electronics and Information Systems, Ghent University – imec}
+\titlerunning{Revisiting Link Prioritization for Efficient Traversal}
+
+%
+% \authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+% \email{lncs@springer.com}\\
+% \url{http://www.springer.com/gp/computer-science/lncs} \and
+% ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+% Context:      Why the need is so pressing or important
+Optimizing queries in decentralized environments, 
+where data sources are often unknown and dynamically discovered, 
+remains a major challenge due to the lack of prior knowledge about data distribution and availability.
+% Need:         Why something needed to be done at all
+User-specific client-side query engines can mitigate this limitation by exploiting patterns in previously issued queries.
+However, existing benchmarks fail to accurately reflect the performance of such approaches,
+as they typically rely on repetitive or template-based query structures that lack realistic variability.
+Moreover, publicly available query logs from real decentralized applications are scarce or absent in the literature.
+Consequently, the evaluation of client-side decentralized query optimization techniques remains incomplete and cannot be performed under representative conditions.
+% Task:         What was undertaken to address the need
+To fill this gap, we introduce an evidence-based simulation of client query usage patterns.
+This simulation enables systematic evaluation and comparison of client-side optimization techniques under realistic and reproducible conditions.
+% Object:       What the present document does or covers
+We demonstrate its use by applying it to a novel caching-based link traversal query processing approach.
+To assess the impact of realistic query sequences, we compare the results against a benchmark that is not sequence-based, 
+highlighting how query sequence simulation influences client-side optimization performance.
+% Findings:     What the work done yielded or revealed
+We find that [placeholder for results].
+% Conclusion:   What the findings mean for the audience
+We conclude: [placeholder for conclusion]
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+
+
+\input{sections/introduction.tex}
+\input{sections/related-work.tex}
+\input{sections/benchmark.tex}
+\input{sections/caching.tex}
+\input{sections/experiment}
+\input{sections/results}
+
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+\bibliographystyle{splncs04}
+\bibliography{../references/bib}
+
+\end{document}
