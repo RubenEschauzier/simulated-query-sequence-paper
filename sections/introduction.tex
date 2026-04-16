@@ -1,41 +1,41 @@
-\section{TODO For Final Experiment}
-  \begin{todolist}
-    \item Investigate why the medium cache has a calculatedSize of 350000 in evictions.
-  \end{todolist}
-\textbf{Planned figures:}
-\begin{todolist}
-    \item unindexed-cache, indexed-cache, estimate-indexed-cache cactus plot
-    \item Same but for optimized join plan computed prior to execution. (should be just a config parameter in experiment)
-    \item (Optional) Correlation between cache hit rate and execution time (also for default but just use the x-values of the other correlation plot as 'hitrate' values
-    \item Average eviction percentage over sequences for different cache sizes. (Use cumulative value)
-    \item Average execution time of cache approaches vs default (Again cumulative)
+% \section{TODO For Final Experiment}
+%   \begin{todolist}
+%     \item Investigate why the medium cache has a calculatedSize of 350000 in evictions.
+%   \end{todolist}
+% \textbf{Planned figures:}
+% \begin{todolist}
+%     \item unindexed-cache, indexed-cache, estimate-indexed-cache cactus plot
+%     \item Same but for optimized join plan computed prior to execution. (should be just a config parameter in experiment)
+%     \item (Optional) Correlation between cache hit rate and execution time (also for default but just use the x-values of the other correlation plot as 'hitrate' values
+%     \item Average eviction percentage over sequences for different cache sizes. (Use cumulative value)
+%     \item Average execution time of cache approaches vs default (Again cumulative)
     
-    \item (If caching still performs poorly) x-axis: simulated cache-hit rate, y-axis query execution time (for single template). For bad join plan / good join plan.
+%     \item (If caching still performs poorly) x-axis: simulated cache-hit rate, y-axis query execution time (for single template). For bad join plan / good join plan.
 
-    \item \textbf{Benchmark tests and figures}:
+%     \item \textbf{Benchmark tests and figures}:
     
-    \item Hitrate following certain templates (within a session only) (based on scatter plot and correlation)
-    \item Same but without QLever based sequence generation
+%     \item Hitrate following certain templates (within a session only) (based on scatter plot and correlation)
+%     \item Same but without QLever based sequence generation
     
-    \item Hitrate after session switch (switch new, switch old)
-    \item Hitrate after session switch (without probability based switching) 
+%     \item Hitrate after session switch (switch new, switch old)
+%     \item Hitrate after session switch (without probability based switching) 
 
-    \item Within refinement sequence hitrate
-    \item Cache performance within refinement sequence compared to default (hitrate, evictions) show average per step (so first refine step second etc) (use cumulative)
+%     \item Within refinement sequence hitrate
+%     \item Cache performance within refinement sequence compared to default (hitrate, evictions) show average per step (so first refine step second etc) (use cumulative)
     
-    \item 
-    \item Appendix: individual sequences
-    \item 
-  \end{todolist}
+%     \item 
+%     \item Appendix: individual sequences
+%     \item 
+%   \end{todolist}
 
-\textbf{Journal extension}
-\begin{todolist}
-    \item Statistical summaries of data for join planning
-    \item Cache-based cardinality estimation using offline traversal
-    \item Disk-based cache
-    \item Adaptive join + caching of documents
-    \item Additional experiments testing cache benchmark
-\end{todolist}
+% \textbf{Journal extension}
+% \begin{todolist}
+%     \item Statistical summaries of data for join planning
+%     \item Cache-based cardinality estimation using offline traversal
+%     \item Disk-based cache
+%     \item Adaptive join + caching of documents
+%     \item Additional experiments testing cache benchmark
+% \end{todolist}
 
 \section{Introduction}
 Centralizing data can simplify query processing, but in many real-world situations, it conflicts with privacy requirements and fine-grained access controls.
@@ -66,7 +66,7 @@ However, other aspects of zero-knowledge LTQP optimization, such as link priorit
 are unlikely to improve query result arrival times in emerging decentralized environments~\cite{eschauzier2025revisiting}.
 
 Consequently, other works explore using precomputed server-side information as prior knowledge 
-or relevance indexes to efficiently execute LTQP queries~\cite{tam2024opportunities,umbrich2011comparing,hanski2024observations}.
+or relevance indexes to efficiently execute LTQP queries \newline \cite{tam2024opportunities,umbrich2011comparing,hanski2024observations}.
 While these approaches offer greater performance benefits, they require the server to maintain these indexes.
 This raises the cost of serving resources and complicates privacy and access control.
 

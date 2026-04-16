@@ -97,7 +97,7 @@ which are related to the original chokepoints identified by the SolidBench bench
 
 \begin{enumerate}
     \item \textbf{P.1} - Addition or removal of a selective filter. The system will require prior knowledge to adjust the query plan effectively and estimate the selectivity of the filter
-    \item \textbf{P.2} - Addition or removal of UNION or OPTIONAL clauses, which change whether a FILTER can be pushed down or not.
+    \item \textbf{P.2} - Addition or removal of UNION or OPTIONAL clauses, which possibly change whether a FILTER can be pushed down or not.
     \item \textbf{P.3} - Addition or removal of selective triple patterns when joined with the rest of the query
     \item \textbf{P.4} - Addition or removal of nonselective triple patterns when joined with the rest of the query.
 \end{enumerate}
@@ -129,5 +129,56 @@ The generator also supports variable instantiation within refinements.
 Through configuration files, users can bind variables present in the refinement patterns to specific values.
 This configuration-driven approach ensures the query generator remains highly flexible and extensible.
 
-\TODO{Explain the connection with the literature (specifically the olaf paper)}
+Through this flexible refinement pattern generator, we explicitly simulate the emperically found usage patterns~\cite{arenas2025exploring}
+in our sequence benchmark. In fact, we can explicitly map the found patterns, summarized in Section~\ref{sec:related_work_qup}, 
+to our allowed composible query transformations and the identified refinement pattern chokepoints.
+
+\begin{itemize}
+    \item \textbf{Result Refinement:} We simulate this behavior by adding or removing FILTER constraints and selective triple patterns in the BGP
+    to adjust query selectivity (Choke point P.1, P.3).
+    \item \textbf{Result Generalization:} We replicate this by adding new triples to existing BGPs
+    (Choke points P.3 and P.4), mirroring how users fetch entities related to existing query and expand the queried classes of entities. 
+    \item \textbf{Result Extension:} Replicated through the addition of triple patterns in BGPs, OPTIONALs, and UNIONs (P.3, P.4, P.2)
+    \item \textbf{Query Refinement:} Simulated by the addition or removal of OPTIONALs and UNIONs
+\end{itemize}
+
+We do not simulate the \textbf{bug fixing} and \textbf{Shifting query intent} patterns, as these are not easily translated to composable
+simulation rules that work in any order without producing invalid queries.
+Due to the composibility of our refinement rules, we additionally address the observation that the emperically identified patterns are
+not mutually exclusive and can co-occur within a sequence.
+
 \subsection{Hyperparameters}
+
+The described generation process depends on multiple new hyperparameters to guide the query generation process. 
+We outline the parameters and their effect in Table~\ref{tab:generation_hyperparameters}. Note that all generation
+is goverened by a single PRNG, which accepts a seed. As such, the generation of queries is reproducable, even 
+with the many random processing in the process.
+
+\begin{table}[ht]
+    \centering
+    \caption{Log-normal distribution parameters ($\mu, \sigma$) control the queries per sequence, 
+    queries per logical session, and the probability of switching logical sessions. 
+    Refinement parameters define the likelihood (\texttt{patternProbability}) 
+    and bounds (\texttt{min/maxRefinementLength}) of generating a refinement sequence for a given query. 
+    Instantiation relies on a softmax \texttt{temperature} and a \texttt{maxLogits} 
+    cutoff for similarity-based entity selection.}
+    \label{tab:generation_hyperparameters}
+    \begin{tabular}{l l c}
+        \toprule
+        \textbf{Category} & \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        \textbf{Distributions} ($\mu, \sigma$) 
+        & Sequence Length & 3.0, 0.2 \\
+        & Session Length & 1.7, 0.5 \\
+        & Transition Probability & -2.0, 0.25 \\
+        \addlinespace
+        \textbf{Refinements} 
+        & \texttt{patternProbability} & 0.1 \\
+        & \texttt{min/maxRefinementLength} & 2, [3--5] \\
+        \addlinespace
+        \textbf{Instantiation} 
+        & \texttt{temperature} & 0.1 \\
+        & \texttt{maxLogits} & 5--10 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
