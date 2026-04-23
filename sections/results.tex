@@ -1,4 +1,61 @@
 \section{Results}
+\subsection{Logical Sessions}
+% \begin{table}[htpb]
+% \centering
+% \caption{
+%     Impact of logical session status on algorithm performance: 
+%     absolute and percentage cache hit rate deviations from the global template average for 
+%     new, existing, and within-session queries.
+% }
+% \label{tab:performance_differences}
+% \begin{tabular}{lrrrrrr}
+% \toprule
+% \textbf{Algorithm} & \multicolumn{2}{c}{\textbf{New Session}} & \multicolumn{2}{c}{\textbf{Existing Session}} & \multicolumn{2}{c}{\textbf{Within Session}} \\
+% \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+% & \textbf{Abs.} & \textbf{\%} & \textbf{Abs.} & \textbf{\%} & \textbf{Abs.} & \textbf{\%} \\
+% \midrule
+% unindexed-cache-l        & -0.066 & -12.278 & -0.014 & -2.474 &  0.011 &  1.931 \\
+% unindexed-cache-m        & -0.056 & -15.649 & -0.031 & -7.900 &  0.024 &  5.486 \\
+% unindexed-cache-s        & -0.071 & -24.275 & -0.021 & -6.551 &  0.017 &  4.582 \\
+% \addlinespace
+% indexed-cache-estimate-l & -0.053 & -10.573 & -0.015 & -2.796 &  0.012 &  2.127 \\
+% indexed-cache-estimate-m &  0.028 &   7.174 & -0.000 & -0.064 & -0.000 & -0.035 \\
+% indexed-cache-estimate-s & -0.044 & -14.305 & -0.013 & -3.921 &  0.010 &  2.924 \\
+% \addlinespace
+% indexed-cache-l          & -0.026 &  -5.011 & -0.003 & -0.571 &  0.003 &  0.467 \\
+% indexed-cache-m          & -0.087 & -22.782 & -0.021 & -5.098 &  0.017 &  3.682 \\
+% indexed-cache-s          & -0.033 & -11.036 & -0.015 & -4.470 &  0.012 &  3.153 \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+\begin{table}[htpb]
+\centering
+\caption{
+    Impact of logical session status on algorithm performance. Values represent absolute and percentage cache hit rate deviations from the global template average across new, existing, and within-session queries.
+}
+\label{tab:performance_differences}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r@{\hspace{1em}}r r@{\hspace{1em}}r r@{\hspace{1em}}r @{}}
+\toprule
+\textbf{Cache Algorithm} & \multicolumn{2}{c}{\textbf{New Session}} & \multicolumn{2}{c}{\textbf{Existing Session}} & \multicolumn{2}{c}{\textbf{Within Session}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+& \textbf{Abs.} & \textbf{\%} & \textbf{Abs.} & \textbf{\%} & \textbf{Abs.} & \textbf{\%} \\
+\midrule
+unindexed-l        & -0.066 & -12.278 & -0.014 & -2.474 &  0.011 &  1.931 \\
+unindexed-m        & -0.056 & -15.649 & -0.031 & -7.900 &  0.024 &  5.486 \\
+unindexed-s        & -0.071 & -24.275 & -0.021 & -6.551 &  0.017 &  4.582 \\
+\cmidrule(lr){1-7}
+indexed-estimate-l & -0.053 & -10.573 & -0.015 & -2.796 &  0.012 &  2.127 \\
+indexed-estimate-m &  0.028 &   7.174 & -0.000 & -0.064 & -0.000 & -0.035 \\
+indexed-estimate-s & -0.044 & -14.305 & -0.013 & -3.921 &  0.010 &  2.924 \\
+\cmidrule(lr){1-7}
+indexed-l          & -0.026 &  -5.011 & -0.003 & -0.571 &  0.003 &  0.467 \\
+indexed-m          & -0.087 & -22.782 & -0.021 & -5.098 &  0.017 &  3.682 \\
+indexed-s          & -0.033 & -11.036 & -0.015 & -4.470 &  0.012 &  3.153 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+\subsection{Refinement Patterns}
 
 \subsection{Theoretical Hit Rate Analysis}
 blabla we want to know what the scaling of speedup looks like when we arbitrarily simulate a cache hitrate for some algorithms. This does not take into account cost of eviction and caching. 

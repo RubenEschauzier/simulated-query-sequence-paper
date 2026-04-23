@@ -5,23 +5,24 @@
 % \textbf{Planned figures:}
 % \begin{todolist}
 %     \item unindexed-cache, indexed-cache, estimate-indexed-cache cactus plot
-%     \item Same but for optimized join plan computed prior to execution. (should be just a config parameter in experiment)
 %     \item (Optional) Correlation between cache hit rate and execution time (also for default but just use the x-values of the other correlation plot as 'hitrate' values
 %     \item Average eviction percentage over sequences for different cache sizes. (Use cumulative value)
 %     \item Average execution time of cache approaches vs default (Again cumulative)
     
-%     \item (If caching still performs poorly) x-axis: simulated cache-hit rate, y-axis query execution time (for single template). For bad join plan / good join plan.
 
 %     \item \textbf{Benchmark tests and figures}:
-    
+%     \item Possibly analyse how turning off user-interest modelling impacts sequence generation
+%     \item Optional:
 %     \item Hitrate following certain templates (within a session only) (based on scatter plot and correlation)
 %     \item Same but without QLever based sequence generation
-    
-%     \item Hitrate after session switch (switch new, switch old)
-%     \item Hitrate after session switch (without probability based switching) 
 
-%     \item Within refinement sequence hitrate
-%     \item Cache performance within refinement sequence compared to default (hitrate, evictions) show average per step (so first refine step second etc) (use cumulative)
+%     \item Figure: Speedup for quantiles, show throughput and total execution time 
+    
+%     \item Table: Hitrate delta after session switch (switch new, switch old)
+
+%     \item Figure: Within refinement sequence hitrate, evictions and speedup
+
+%     \item Table: Hitrates and performance characteristics of randomized sequences
     
 %     \item 
 %     \item Appendix: individual sequences
@@ -32,9 +33,10 @@
 % \begin{todolist}
 %     \item Statistical summaries of data for join planning
 %     \item Cache-based cardinality estimation using offline traversal
-%     \item Disk-based cache
-%     \item Adaptive join + caching of documents
+%     \item (Optional) Adaptive join + caching of documents
 %     \item Additional experiments testing cache benchmark
+%     \item Specifically the refinement patterns by generating more sequences of refinement patterns 
+%     and testing the performance impact of different chokepoints etc
 % \end{todolist}
 
 \section{Introduction}
