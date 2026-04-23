@@ -38,7 +38,8 @@
 % \end{todolist}
 
 \section{Introduction}
-Centralizing data can simplify query processing, but in many real-world situations, it conflicts with privacy requirements and fine-grained access controls.
+\rt{Before jumping intro query processing, I'd first add a sentence or so on sketching more context. For example, you could talk about (decentralized) apps, and how query engines could help here.}
+Centralizing data can simplify query processing, but in many real-world situations, it can conflict with privacy requirements and fine-grained access controls.
 Structured decentralized ecosystems such as Solid~\cite{sambra2016solid} and Mastodon~\cite{raman2019challenges} encourage users to keep their own data in small, independent stores that follow shared data models. 
 This approach strengthens user autonomy, yet it makes query execution more difficult because engines must identify and query many heterogeneous data sources, each with its own access policies.
 
@@ -46,7 +47,7 @@ Traditional federated querying approaches~\cite{schwarte2011fedx,schmidt2011fedb
 These assumptions fail once data is spread across thousands of small units that enforce local access-control policies.
 In addition, enforcing fine-grained access control policies~\cite{esteves2021odrl} on large sources with expressive interfaces introduces notable overhead~\cite{padia2015attribute}, making standard approaches unsuitable for highly decentralized environments.
 
-Newer decentralized environments, such as Solid, often expose data as lightweight HTTP resources~\cite{verborgh2016triple} instead of highly expressive query interfaces. 
+Newer decentralized environments, such as Solid, often expose data as lightweight HTTP resources~\cite{verborgh2016triple} \rt{The citation is about lightweight interfaces, but TPF is not used in Solid, so this citation might be confusing here.} instead of highly expressive query interfaces. 
 Many of these resources are not known in advance and can only be discovered during query execution. 
 Their simplicity lowers the cost of enforcing fine-grained controls.
 This setting requires a federation model that can operate over a very large number of small sources, many of which may be encountered at runtime, without relying on prior aggregation. 
@@ -72,8 +73,12 @@ This raises the cost of serving resources and complicates privacy and access con
 
 To avoid this server-side overhead, engines can derive prior knowledge directly on the client.
 In decentralized settings, LTQP is inherently client-side, with one engine instance serving a single user.
+\rt{I recommend rephrasing the following slightly. Instead of talking about the \emph{user} issuing queries, I would rephrase this towards one or more applications}
 As users issue sequences of potentially correlated queries, the engine can identify frequently accessed data and its characteristics.
 This enables engines to implement \emph{personalized} query optimization algorithms that leverage these access patterns to acquire the necessary prior knowledge.
+\rt{If space permits, I'd add a figure here that illustrates this "personalized" aspect here. For example where a user interacts with an app, and that app issues multiple queries to the same query engine, and leads to some overlapping HTTP requests.}
+
+\rt{The following two paragraphs make the intro quite long. Not sure, but I wonder if they would not be better moved to related work, and more summarized to their essence here within this intro?}
 
 % TODO: ChatGPT
 Benchmarking these approaches requires a benchmark that reflects the query sequences and correlations that LTQP engines may encounter when used by real clients over real data.
@@ -87,9 +92,9 @@ For centralized SPARQL query optimization, such query logs~\cite{berendt2013usew
 However, for personalized query optimization in LTQP, real-world query logs from applications built on structured decentralized environments are not yet available. 
 To avoid the fragmented evaluation practices seen in caching literature, we need a benchmark that can simulate such query sequences in a way that is representative of real-world usage.
 
-In this paper, we address this gap in benchmarking literature by extending SolidBench~\cite{taelman2023link}, an existing LTQP benchmark, to generate query sequences.
+In this paper, we address this gap in benchmarking literature \rt{---> "in benchmarks"?} by extending SolidBench~\cite{taelman2023link}, an existing LTQP benchmark \rt{SolidBench is not specifically an LTQP benchmark though. LTQP is just one way of executing the queries of that benchmark.}, to generate query sequences.
 These sequences capture three query engine usage patterns identified in the literature on social network applications, which SolidBench simulates, as well as patterns observed in real-world SPARQL query logs.
-This extension allows researchers to evaluate personalized query optimization techniques against patterns they are likely to encounter when these methods are deployed in real client-facing applications.
+This extension \rt{Be careful with positioning it as an extension, as reviewers may consider it "just" an extension. I'd position it as a new benchmark, which builds upon SolidBench.} allows researchers to evaluate personalized query optimization techniques against patterns they are likely to encounter when these methods are deployed in real client-facing applications.
 
 To test our benchmark, we implement three caching strategies in the LTQP engine Comunica~\cite{taelman2018comunica,taelman2023link}.
 These strategies are intentionally simple, but they provide a clear view of the benchmark’s performance characteristics and will demonstrate (insert here when results are in).

@@ -86,13 +86,13 @@ robotic queries~\cite{zhang2020characterizing,bonifati2020analytical}.
 
 In this benchmark, we focus on organic query sequences~\cite{zhang2020characterizing}, 
 which users generate through interactions with software or browsers~\cite{malyshev2018getting}.
-This organic interaction likely represents the primary method users will use to navigate structured decentralized environments.
+This organic interaction likely \rt{This "likely" here is dangerous. Reviewers might raise concerns because of it. I would phrase it as something like: "As organic interactions as a property of the application, and not the way data is organized, we assume that these characteristics also occur in applications over decentralized environments."} represents the primary method users will use to navigate structured decentralized environments.
 Furthermore, we deprioritize robotic queries because their sequences can already be simulated by traditional benchmark approaches.
 
 For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
 of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
 
-Previous work~\cite{zhang2020characterizing} defined three types of robotic patterns:  
+Previous work~\cite{zhang2020characterizing} defined three types of robotic patterns: \rt{If you run into space issues, this could be cut or shortened. Since you don't focus on robotic patterns.}  
 \begin{itemize}
   \item \textbf{Single Intra Loop Pattern}: Queries follow a fixed template, while only constants (IRIs, literals, and variables) change between executions. This pattern is captured by  \texttt{[0+]} (repeated use of one query template).
   \item \textbf{Sequence of Intra Loops}: Multiple intra loops used in sequence, e.g., querying different attributes in turn. This is captured by: \texttt{[0+1+...]} (series of template-wise query batches).
