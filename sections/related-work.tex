@@ -92,13 +92,8 @@ Furthermore, we deprioritize robotic queries because their sequences can already
 For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
 of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
 
-Previous work~\cite{zhang2020characterizing} defined three types of robotic patterns:  
-\begin{itemize}
-  \item \textbf{Single Intra Loop Pattern}: Queries follow a fixed template, while only constants (IRIs, literals, and variables) change between executions. This pattern is captured by  \texttt{[0+]} (repeated use of one query template).
-  \item \textbf{Sequence of Intra Loops}: Multiple intra loops used in sequence, e.g., querying different attributes in turn. This is captured by: \texttt{[0+1+...]} (series of template-wise query batches).
-  \item \textbf{Inter Loop Pattern}: Full attribute sets are queried for one subject, then repeated for another subject. This pattern follows: \texttt{[(01...)+]} (template sequence repeated per subject).
-\end{itemize}
-These patterns are already simulated by current benchmarks~\cite{taelman2023link,bizer2011berlin,alucc2014diversified} 
+Previous work~\cite{zhang2020characterizing} defined robotic query patterns, which can be simulated
+by current benchmarks~\cite{taelman2023link,bizer2011berlin,alucc2014diversified} 
 using instantiations of query templates.
 
 Recently, an analysis of Wikidata query logs demonstrated that query development 

@@ -56,7 +56,20 @@ indexed-s          & -0.033 & -11.036 & -0.015 & -4.470 &  0.012 &  3.153 \\
 \end{tabular*}
 \end{table}
 \subsection{Refinement Patterns}
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/combined_cache_efficiency.pdf}
+    \caption{Cache hit ratios and percentage of cache capacity evicted across refinement depths for small, medium, and large cache configurations.}
+    \label{fig:cache_efficiency}
+\end{figure}
 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/temporal_throughput_line.pdf}
+    \caption{Geometric mean of observed speedups and increases respectively for total execution time and query throughput 
+    relative to the no caching baseline across refinement depths.}
+    \label{fig:temporal_throughput}
+\end{figure}
 \subsection{Theoretical Hit Rate Analysis}
 blabla we want to know what the scaling of speedup looks like when we arbitrarily simulate a cache hitrate for some algorithms. This does not take into account cost of eviction and caching. 
 
