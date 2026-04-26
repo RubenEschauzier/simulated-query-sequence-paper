@@ -1,6 +1,29 @@
 \section{Results}
 \subsection{Global Cache Performance}
-\begin{figure}[h]
+
+Figure \ref{fig:global_cache_performance} presents the global caching performance profiles for each approach
+at various sizes against the no-cache baseline.
+As expected, all caching methods outperform the baseline.
+
+For the unindexed cache, small (350,000 triples) and medium (700,000 triples) sizes perform similarly. 
+The large cache (1,400,000 triples) shows significant improvement, 
+indicating it reaches the critical capacity needed to retain entries across the entire query sequence. 
+However, the baseline ultimately \emph{solves} more total queries. 
+This indicates that cache management overhead causes some long-running queries to fail before the deadline.
+
+The indexed cache results support this, showing an even higher proportion of failed queries.
+This aligns with the hypothesis that higher indexing costs slow down execution during frequent cache evictions.
+Yet, when the indexed cache succeeds, it provides a larger performance boost than the unindexed cache.
+Additionally, the indexed cache has a lower critical capacity threshold, as medium and large sizes perform similarly.
+
+Finally, the indexed cache with cardinality estimation performs best. 
+It significantly improves query speeds and solves \emph{more} queries than the baseline. 
+For this method, increasing the cache size does not improve performance;
+in fact, the large cache performs worse than the small and medium versions.
+This suggests cardinality estimation benefits from a smaller, less stale cache, 
+because the estimation process evaluates all cache entries rather than just traversal-relevant ones.
+
+\begin{figure}[htpb]
     \centering
     \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
     \caption{\todo{CAPTION HERE}}
@@ -92,3 +115,5 @@ Thus, waiting for HTTP responses between traversal steps allows the JavaScript e
     \caption{Theoretical unindexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
     \label{fig:theoretical_cache_performance}
 \end{figure*}
+
+\subsection{Benchmark abalations}
