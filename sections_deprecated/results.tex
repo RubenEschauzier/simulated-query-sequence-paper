@@ -26,7 +26,9 @@ because the estimation process evaluates all cache entries rather than just trav
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
-    \caption{\todo{CAPTION HERE}}
+    \caption{Performance profile of caching strategies.
+    The x-axis represents the execution time relative to the best-performing algorithm (1x = fastest). 
+    The y-axis displays the cumulative percentage of queries successfully resolved within that factor.}
     \label{fig:global_cache_performance}
 \end{figure}
 
@@ -135,9 +137,11 @@ achieving substantial throughput gains at depth 4 compared to the unindexed alte
 
 
 \subsection{Theoretical Hit Rate Analysis}
-blabla we want to know what the scaling of speedup looks like when we arbitrarily simulate a cache hitrate for some algorithms. This does not take into account cost of eviction and caching. 
+To analyze theoretical caching speedup without management costs, we executed one instance of each query template twice 
+and simulated cache misses at varying probabilities. 
+We excluded the estimation-based approach because using the full cache for estimation would skew the results.
 
-From Figures~\ref{fig:theoretical_cache_performance} and \ref{fig:theoretical_query_cache_performance}, we find that in most cases caching can significantly improve query execution time, 
+From Figures~\ref{fig:theoretical_cache_performance} and~\ref{fig:theoretical_query_cache_performance}, we find that in most cases caching can significantly improve query execution time, 
 with improvements scaling predictably as hit rate increases. 
 For some long-running queries such as interactive-discover-6, 7, and short-3 no speedup is observed, with some queries even showing slower result production. 
 These query templates traverse many solid pods, but do not require all traversed data. 
