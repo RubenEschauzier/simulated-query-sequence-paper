@@ -95,7 +95,8 @@ the similarity scores of the users who created that content.
 \subsubsection{Refinement Patterns}
 The benchmark simulates query refinement by randomly applying composable 
 transformations to an instantiated query template. 
-Following our literature review, we specifically focus on $x$ \rt{What does this X mean? That it's configurable? And any value will work?} types of transformations. 
+Following our literature review, we specifically focus on transformations to 
+add or modify BGPs, OPTIONALs, UNIONs, and query instantiation values.
 
 To ensure these transformations meaningfully alter query execution characteristics, rather 
 than superficially appending triples that maintain a one-to-one relation with the result 
@@ -145,7 +146,7 @@ The supported refinement operators include:
     \item \textbf{\texttt{OPTIONAL} and \texttt{UNION} blocks:} Adding new blocks 
     or inserting triples into existing ones (including specific \texttt{UNION} branches).
     
-    \item \textbf{Basic Graph Patterns (BGPs):} Adding new triples \rt{triple patterns?} to existing BGPs. \rt{The concept of BGPs might be unknown to some readers, so make sure to briefly explain it somewhere.} \rt{Now that I write this, has it made explicit somewhere that this benchmark focuses on SPARQL queries?}
+    \item \textbf{Basic Graph Patterns (BGPs):} Adding new triple patterns to existing BGPs. \rt{The concept of BGPs might be unknown to some readers, so make sure to briefly explain it somewhere.} \rt{Now that I write this, has it made explicit somewhere that this benchmark focuses on SPARQL queries?}
     
     \item \textbf{\texttt{FILTER} statements:} Appending new query constraints.
     
