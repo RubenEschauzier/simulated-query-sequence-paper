@@ -53,11 +53,11 @@ Ruben Taelman\inst{1}\orcidID{0000-0001-5118-256X}}
 Optimizing queries in decentralized environments, 
 where data sources are often unknown and dynamically discovered, 
 remains a major challenge due to the lack of prior knowledge about data distribution and availability.
-\rt{I would add one sentence here (or otherwise incorporate it above) to motivate the need for user-specific client-side query engines. Something like: Client-side apps can reuse the same client-side query engine, which introduces optimization opportunities.}
+Because client-side applications repeatedly use the same query engine, they create unique optimization opportunities.
 % Need:         Why something needed to be done at all
-User-specific client-side query engines can mitigate this limitation by exploiting patterns in previously issued queries.
-However, existing benchmarks fail to accurately reflect the performance \rt{Not sure "performance" is the right word here. I would talk about the typical properties and characteristics of user-specificness, or something like that, which then can lead to better performance.} of such approaches,
-as they typically rely on repetitive or template-based query structures that lack realistic variability.
+User-specific engines can capitalize on these opportunities by exploiting patterns in previously issued queries.
+However, existing benchmarks fail to accurately capture the specific characteristics and behavioral variability of user-centric workloads,
+relying instead on repetitive or template-based query structures.
 Moreover, publicly available query logs from real decentralized applications are scarce or absent in the literature.
 Consequently, the evaluation of client-side decentralized query optimization techniques remains incomplete and cannot be performed under representative conditions.
 % Task:         What was undertaken to address the need
@@ -68,11 +68,13 @@ We demonstrate its use by applying it to a novel caching-based link traversal qu
 To assess the impact of realistic query sequences, we compare the results against a benchmark that is not sequence-based, 
 highlighting how query sequence simulation influences client-side optimization performance.
 % Findings:     What the work done yielded or revealed
-We find that [placeholder for results].
-% Conclusion:   What the findings mean for the audience
-We conclude: [placeholder for conclusion]
+We find that our benchmark effectively reveals critical performance dynamics, 
+such as the impact of session switching and query refinement, which traditional workloads fail to capture.
+% Conclusion: What the findings mean for the audience
+We conclude that modeling realistic user interactions provides an essential foundation 
+for the accurate evaluation and development of client-side optimization techniques in decentralized environments.
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+\keywords{Link Traversal-based Query Processing  \and Benchmarking \and Workload Generation \and Caching. }
 \end{abstract}
 
 
