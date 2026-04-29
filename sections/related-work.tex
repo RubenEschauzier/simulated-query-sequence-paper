@@ -4,36 +4,69 @@ For the evaluation of client-side benchmarking techniques that rely on preceding
 
 In the literature, we find three distinct benchmarking approaches: simulated micro benchmarks, simulated end-to-end query benchmarks, and real-world query logs.
 
-\textbf{Simulated micro benchmarks} attempt to isolate performance gains of the benchmarked approaches by fixing certain aspects of query execution.
-This can range from fixing the cached data size \cite{hartig2011caching} to controlling the percentage of query-relevant data present in the cache \cite{nicholson2024hpcache}. Fixing aspects of query execution makes it easier to isolate and understand the effect of specific caching mechanisms. 
-However, it also gives an incomplete picture, because we don’t know how those fixed conditions relate to real workloads or how the methods perform when those assumptions don’t hold.
+% Existing evaluation methods for client-side query optimization 
+% generally fall into three categories:
 
-\textbf{Simulated end-to-end query benchmarks} use generated query sequences to evaluate performance. 
-They aim to measure cache hit rate and overall execution behavior under the assumption that the simulated sequences reflect realistic usage.
-In practice, the simulation is usually built by extending an existing benchmark so that it generates sequences instead of isolated queries. 
-The sequence order is often determined by simple rules or by random selection.
+\textbf{Simulated micro benchmarks} isolate specific execution variables, 
+such as cache size~\cite{hartig2011caching} or indirectly, cache hit rate~\cite{nicholson2024hpcache}. 
+While useful for analyzing isolated mechanisms, 
+they provide an incomplete picture of performance under realistic, dynamic workloads.
 
-A common approach is to use queries from existing benchmarks such as the Star Schema Benchmark \cite{o2009star} or the Berlin SPARQL Benchmark~\cite{bizer2011berlin}.
-These queries are then randomly divided into sequences \cite{hartig2011caching,nicholson2024hpcache,folz2016cyclades}, with each sequence executed using a shared cache. This approach is straightforward but not realistic.
-Prior work shows that real workloads contain user behavior patterns and temporal locality, and these patterns can be exploited by caching methods.
-Random sequences fail to capture these properties.
+\textbf{Simulated end-to-end benchmarks} evaluate overall behavior using query sequences. 
+However, these sequences are typically constructed by randomly grouping 
+isolated queries~\cite{o2009star,bizer2011berlin,hartig2011caching,nicholson2024hpcache,folz2016cyclades}, 
+applying simple statistical distributions like Pareto~\cite{williams2011enabling,martin2010improving,arnold2014pareto}, 
+or relying on narrow application scenarios~\cite{chatzopoulos2022atrapos,martin2010improving} with custom build
+query sequences. 
+Each of these methods suffers from distinct limitations. 
+Random grouping ignores real-world behavior entirely. 
+Simple statistical distributions are too basic to capture complex user habits. 
+Finally, static scenarios generate too few queries to provide comprehensive benchmark coverage. 
+Consequently, none of these approaches simulate how users actually explore data, 
+missing how they group related queries into short sessions 
+and constantly adjust their search parameters based on immediate results.
 
-More realistic is to adjust the query generators of existing benchmarks to include patterns in the query sequences.
-Some works~\cite{williams2011enabling,martin2010improving} use a Pareto distribution to decide what entity is used to instantiate a query template. This follows from the observation that many human activities follow a Pareto distribution~\cite{arnold2014pareto}, with many queries relating to a small portion of the entities.
+\textbf{Real-world query logs} provide the gold standard for evaluation. 
+While extensive logs are widely used to benchmark centralized SPARQL endpoints\\~\cite{saleem2015lsq,stadler2024lsq,berendt2013usewod2013,zhang2016secf,papailiou2015graph,lorey2013caching}, 
+none currently exist for decentralized LTQP environments. 
 
-A third approach uses simulated query sequences that reflect the access patterns of specific applications.
-One example is a workload that models data scientists exploring different aspects of the same entity—such as an author in a scholarly network—through consecutive, thematically related queries~\cite{chatzopoulos2022atrapos}.
-Such simulations often include multiple query sessions, with new sessions beginning according to a probability parameter $p$.
-Another example is a simulated application scenario focused on retrieving information about vacation destinations, which is used to assess caching effectiveness~\cite{martin2010improving}.
+To avoid the fragmented evaluation practices of current simulated approaches,
+the next best option is a unified simulated benchmark. 
+A shared benchmark would provide a common basis for comparison, improve reproducibility,
+and prevent each paper from having to create its own evaluation methodology.
 
-\textbf{Real-world query logs} Whenever available, query logs from actual applications form a highly relevant benchmarking approach.
-However, obtaining these query logs can be challenging.
-For SPARQL query optimization, query logs for a variety of endpoints are available, such as DBpedia~\cite{saleem2015lsq,stadler2024lsq,berendt2013usewod2013} and Wikidata~\cite{stadler2024lsq}.
-These logs are extensively used in benchmarking SPARQL-based approaches~\cite{zhang2016secf,papailiou2015graph,lorey2013caching}.
+% \textbf{Simulated micro benchmarks} attempt to isolate performance gains of the benchmarked approaches by fixing certain aspects of query execution.
+% This can range from fixing the cached data size~\cite{hartig2011caching} to controlling the percentage of query-relevant data present in the cache \cite{nicholson2024hpcache}. Fixing aspects of query execution makes it easier to isolate and understand the effect of specific caching mechanisms. 
+% However, it also gives an incomplete picture, because we don’t know how those fixed conditions relate to real workloads or how the methods perform when those assumptions don’t hold.
 
-The evaluation of personalized LTQP optimization would ideally use real-world query logs, but such logs do not exist.
-To avoid the fragmented evaluation practices of current simulated approaches, the next best option is a unified simulated benchmark. 
-A shared benchmark would provide a common basis for comparison, improve reproducibility, and prevent each paper from recreating its own evaluation setup.
+% \textbf{Simulated end-to-end query benchmarks} use generated query sequences to evaluate performance. 
+% They aim to measure cache hit rate and overall execution behavior under the assumption that the simulated sequences reflect realistic usage.
+% In practice, the simulation is usually built by extending an existing benchmark so that it generates sequences instead of isolated queries. 
+% The sequence order is often determined by simple rules or by random selection.
+
+% A common approach is to use queries from existing benchmarks such as the Star Schema Benchmark \cite{o2009star} or the Berlin SPARQL Benchmark~\cite{bizer2011berlin}.
+% These queries are then randomly divided into sequences \cite{hartig2011caching,nicholson2024hpcache,folz2016cyclades}, with each sequence executed using a shared cache. This approach is straightforward but not realistic.
+% Prior work shows that real workloads contain user behavior patterns and temporal locality, and these patterns can be exploited by caching methods.
+% Random sequences fail to capture these properties.
+
+% More realistic is to adjust the query generators of existing benchmarks to include patterns in the query sequences.
+% Some works~\cite{williams2011enabling,martin2010improving} use a Pareto distribution to decide what entity is used to instantiate a query template.
+% This follows from the observation that many human activities follow a Pareto distribution~\cite{arnold2014pareto},
+%  with many queries relating to a small portion of the entities.
+
+% A third approach uses simulated query sequences that reflect the access patterns of specific applications.
+% One example is a workload that models data scientists exploring different aspects of the same entity—such as an author in a scholarly network—through consecutive, thematically related queries~\cite{chatzopoulos2022atrapos}.
+% Such simulations often include multiple query sessions, with new sessions beginning according to a probability parameter $p$.
+% Another example is a simulated application scenario focused on retrieving information about vacation destinations, which is used to assess caching effectiveness~\cite{martin2010improving}.
+
+% \textbf{Real-world query logs} Whenever available, query logs from actual applications form a highly relevant benchmarking approach.
+% However, obtaining these query logs can be challenging.
+% For SPARQL query optimization, query logs for a variety of endpoints are available, such as DBpedia~\cite{saleem2015lsq,stadler2024lsq,berendt2013usewod2013} and Wikidata~\cite{stadler2024lsq}.
+% These logs are extensively used in benchmarking SPARQL-based approaches~\cite{zhang2016secf,papailiou2015graph,lorey2013caching}.
+
+% The evaluation of personalized LTQP optimization would ideally use real-world query logs, but such logs do not exist.
+% To avoid the fragmented evaluation practices of current simulated approaches, the next best option is a unified simulated benchmark. 
+% A shared benchmark would provide a common basis for comparison, improve reproducibility, and prevent each paper from recreating its own evaluation setup.
 
 \subsection{Real-world Query Usage Patterns}
 \label{sec:related_work_qup}
@@ -54,15 +87,11 @@ These findings support the simulation of user-relatedness and interest-driven be
 Analysis of web browsing behavior shows that activity can be grouped into sessions~\cite{meiss_whats_2009,sadagopan2008characterizing,schneider2009understanding}.
 Rather than being defined purely by time, these sessions are better represented as logical sessions~\cite{meiss_whats_2009,schneider2009understanding}, which capture activity focused on a specific topic or goal.
 
-Logical sessions are constructed by initializing a set of sessions $T$ and a mapping $N: U \rightarrow T$ from URLs to sessions. The procedure is as follows:
-\begin{itemize}
-    \item If the referrer $r$ is empty, create a new session $t$ with root node $u$ and set $N(u) = t$.
-    \item If $N(r)$ is already defined, attach $u$ to the session $N(r)$ as needed and set $N(u) = N(r)$.
-    \item Otherwise, create a new session $t$ with root node $r$ and leaf node $u$, then set $N(r) = N(u) = t$.
-\end{itemize}
-
-This formulation ensures that sessions capture sequences of activity focused on a topic, rather than being defined solely by proximity in time.
-Logical sessions often involve backtracking.
+Rather than being defined purely by time, web browsing activity is better represented as \emph{logical sessions}
+that capture sequences of user interactions
+focused on a specific topic or goal~\cite{meiss_whats_2009,schneider2009understanding}.
+These task-oriented sessions frequently involve non-linear navigation patterns,
+including backtracking.
 New sessions start in approximately $15\%$ of clicks and follow a log-normal distribution.
 The average size and depth of logical sessions have log-normal means of 6.1 and 3, respectively. 
 
@@ -89,38 +118,22 @@ which users generate through interactions with software or browsers~\cite{malysh
 Because organic interactions are driven by application design rather than underlying data organization, 
 we assume these user behaviors will also emerge in applications navigating structured decentralized environments
 Furthermore, we deprioritize robotic queries because their sequences can 
-already be simulated by traditional benchmark approaches.
+already be simulated by traditional benchmark approaches~\cite{taelman2023link,bizer2011berlin,alucc2014diversified}.
 
 For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
 of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
 
-Previous work~\cite{zhang2020characterizing} defined robotic query patterns, which can be simulated
-by current benchmarks~\cite{taelman2023link,bizer2011berlin,alucc2014diversified} 
-using instantiations of query templates.
-
-Recently, an analysis of Wikidata query logs demonstrated that query development 
-is an iterative process of design, debugging, and maintenance~\cite{arenas2025exploring}. 
-Based on this empirical data, exploratory querying can be classified into six 
-distinct categories~\cite{arenas2025exploring}:
-\begin{itemize}
-    \item \textbf{Result Refinement:} Users apply additional constraints, 
-    such as filters and selective triple patterns, to reduce returned records.
-    
-    \item \textbf{Result Generalization:} Users retrieve more entities by 
-    broadening parameters, such as adding superclasses or increasing result limits.
-    
-    \item \textbf{Result Extension:} Users append new triple patterns to 
-    fetch additional attributes for selected entities.
-    
-    \item \textbf{Query Refinement:} Users adjust complex language features to 
-    precisely align the query with their initial intent.
-    
-    \item \textbf{Bug Fixing:} Users correct structural or syntax errors, 
-    such as invalid URIs, within an initial query.
-    
-    \item \textbf{Shifting Query Intent:} Users alter core query elements, 
-    such as predicates or filters, to pivot searches toward related topics.
-\end{itemize}
+Recent analyses of Wikidata query logs demonstrate that query development is an iterative process of design,
+debugging, and maintenance~\cite{arenas2025exploring}.
+Based on this empirical data, 
+exploratory querying encompasses six core behaviors~\cite{arenas2025exploring}:
+\textbf{result refinement} to reduce records via filters or selective triple patterns,
+\textbf{result generalization} to retrieve more entities by broadening parameters,
+such as adding superclasses or increasing limits,
+\textbf{result extension} to fetch additional attributes by appending new triple patterns,
+\textbf{bug fixing} to correct structural errors like invalid URIs,
+\textbf{query refinement} to adjust complex language features,
+and \textbf{shifting query intent} to pivot topics by altering core predicates.
 
 These findings confirm that real-world querying relies on dynamic, step-by-step modifications rather than the static execution of independent templates.
 Consequently, existing evaluation frameworks fail to capture how users actively interact with data systems. 

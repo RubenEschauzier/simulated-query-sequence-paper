@@ -25,6 +25,16 @@ Figure~\ref{fig:global_cache_performance} presents the global caching performanc
 at various sizes against the no-cache baseline.
 As expected, all caching methods outperform the baseline.
 
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
+    \caption{Performance profile of the tested cache algorithms.
+     The y-axis shows the percentage of queries that execute within 
+     a given performance factor (x-axis) of the fastest algorithm for that query.}
+    \label{fig:global_cache_performance}
+\end{figure}
+
 For the unindexed cache, small (350,000 triples) and medium (700,000 triples) sizes perform similarly. 
 The large cache (1,400,000 triples) shows significant improvement, 
 indicating it reaches the critical capacity needed to retain entries across the entire query sequence. 
@@ -43,14 +53,7 @@ in fact, the large cache performs worse than the small and medium versions.
 This suggests cardinality estimation benefits from a smaller, less stale cache, 
 because the estimation process evaluates all cache entries rather than just traversal-relevant ones.
 
-\begin{figure}[htpb]
-    \centering
-    \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
-    \caption{Performance profile of the tested cache algorithms.
-     The y-axis shows the percentage of queries that execute within 
-     a given performance factor (x-axis) of the fastest algorithm for that query.}
-    \label{fig:global_cache_performance}
-\end{figure}
+
 
 
 \subsection{Logical Sessions}

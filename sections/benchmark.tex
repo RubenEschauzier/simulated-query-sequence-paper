@@ -19,8 +19,9 @@ To support sequence-based evaluation, we extend three core components of the Sol
 \end{itemize}
 
 \subsection{Simulation Methodology}
-This subsection details how we integrate the empirically identified usage patterns 
-into our simulated query sequences. \rt{Let's hint here to what will come, and how the general concepts (sessions, interests, refinement, ...) are tied together.}
+Our methodology models three interdependent behaviors: task-oriented logical sessions,
+user interests for data locality,
+and refinement patterns for iterative query development.
 
 \subsubsection{Logical Query Sessions}
 To model logical sessions, we categorize queries into four primary topics: 
@@ -95,59 +96,43 @@ the similarity scores of the users who created that content.
 \subsubsection{Refinement Patterns}
 The benchmark simulates query refinement by randomly applying composable 
 transformations to an instantiated query template. 
-Following our literature review, we specifically focus on $x$ \rt{What does this X mean? That it's configurable? And any value will work?} types of transformations. 
+Following our literature review, we specifically focus on transformations to 
+add or modify BGPs, OPTIONALs, UNIONs, and query instantiation values.
 
 To ensure these transformations meaningfully alter query execution characteristics, rather 
 than superficially appending triples that maintain a one-to-one relation with the result 
 set, we apply a choke point-based design methodology~\cite{angles2014linked}. 
-Specifically, we define the following planning choke points for client-side query 
-optimization in decentralized environments, building upon the original SolidBench 
-choke points~\cite{taelman2023link}:
+Specifically, we define several planning choke points for client-side query 
+optimization in decentralized environments, building on the original SolidBench 
+choke points~\cite{taelman2023link}: 
+\textbf{P.1} involves adding or removing a \texttt{FILTER}, which requires 
+prior knowledge to adjust query plans and estimate selectivity; 
+\textbf{P.2} addresses adding or removing \texttt{UNION} or \texttt{OPTIONAL} 
+clauses to alter filter push-down capabilities; 
+\textbf{P.3} covers adding or removing selective triple patterns; 
+and \textbf{P.4} focuses on adding or removing non-selective triple patterns.
 
-\begin{enumerate}
-    \item \textbf{P.1:} Addition or removal of a \texttt{FILTER}. 
-    The system requires prior knowledge to adjust the query plan effectively and 
-    estimate filter selectivity.
-    
-    \item \textbf{P.2:} Addition or removal of \texttt{UNION} or \texttt{OPTIONAL} 
-    clauses, which can alter whether a \texttt{FILTER} can be pushed down.
-    
-    \item \textbf{P.3:} Addition or removal of selective triple patterns.
-    
-    \item \textbf{P.4:} Addition or removal of non-selective triple patterns.
-\end{enumerate}
-
-Beyond query planning, these refinements also impact the traversal process of 
-decentralized querying approaches (such as LTQP). 
-We identify the following traversal choke points:
-
-
-\begin{enumerate}
-    \item \textbf{T.1:} Refinements expand or contract the reachable sub-web due 
-    to predicate additions.
-    
-    \item \textbf{T.2:} Refinements shift the reachable sub-web by substituting 
-    the traversal starting point.
-    
-    \item \textbf{T.3:} Refinements change the number of hops required to obtain 
-    relevant data (corresponding to SolidBench choke points L.1--L.6~\cite{taelman2023evaluation}).
-    
-    \item \textbf{T.4:} Refinements alter the usability of structural indexes, such 
-    as type indexes (corresponding to SolidBench choke point L.8~\cite{taelman2023evaluation}).
-\end{enumerate}
-
+Beyond planning, these refinements also impact traversal processes. 
+We identify the following traversal choke points: 
+\textbf{T.1} expands or contracts the reachable sub-web through predicate additions; 
+\textbf{T.2} shifts the sub-web by substituting the traversal starting point; 
+\textbf{T.3} changes the number of hops required to obtain relevant data, 
+corresponding to SolidBench choke points L.1--L.6~\cite{taelman2023evaluation}; 
+and \textbf{T.4} alters the usability of structural indexes, such as 
+type indexes, corresponding to SolidBench choke point L.8~\cite{taelman2023evaluation}.
 
 The generator applies these refinements sequentially to a base SolidBench query template. 
 By default, every refinement pattern includes a reciprocal ``undo'' operation. 
 The supported refinement operators include:
 
 \begin{itemize}
-    \item \textbf{\texttt{OPTIONAL} and \texttt{UNION} blocks:} Adding new blocks 
+    \item \textbf{OPTIONAL and UNION blocks:} Adding new blocks 
     or inserting triples into existing ones (including specific \texttt{UNION} branches).
     
-    \item \textbf{Basic Graph Patterns (BGPs):} Adding new triples \rt{triple patterns?} to existing BGPs. \rt{The concept of BGPs might be unknown to some readers, so make sure to briefly explain it somewhere.} \rt{Now that I write this, has it made explicit somewhere that this benchmark focuses on SPARQL queries?}
+    \item \textbf{Basic Graph Patterns (BGPs):} Adding new triple patterns to existing BGPs;
+    the sets of triple patterns that form the core graph-matching logic of a SPARQL query.
     
-    \item \textbf{\texttt{FILTER} statements:} Appending new query constraints.
+    \item \textbf{FILTER statements:} Appending new query constraints.
     
     \item \textbf{Value substitution:} Replacing template instantiation values to 
     start traversal from a different seed document.
@@ -157,7 +142,7 @@ The generator also supports variable instantiation within refinements, allowing 
 to bind pattern variables to specific values randomly selected from candidates provided through configuration files. 
 Users can define custom query refinement patterns using JSON files to augment the provided 
 default configurations. These defaults, along with documentation and pattern descriptions, 
-are available on \href{https://github.com/RubenEschauzier/SolidBench.js/tree/feature/user-based-query-sequences/templates/refinements}{GitHub}.\rt{This link won't show up in print.}
+are available on \href{https://github.com/RubenEschauzier/SolidBench.js/tree/feature/user-based-query-sequences/templates/refinements}{GitHub}.\footnote{https://github.com/RubenEschauzier/SolidBench.js/tree/feature/user-based-query-sequences/templates/refinements}
 
 
 Through this flexible generator, we explicitly simulate the empirical exploratory 
