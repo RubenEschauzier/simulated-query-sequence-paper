@@ -25,6 +25,10 @@ regardless of their reachability for the current query,
 we can replace these heuristics with Comunica's default cost-based optimizer~\cite{taelman2018comunica} 
 to generate more accurate query plans. \\
 
+For each caching algorithm, we investigate three sizes: small (350000 quads), medium (700000 quads),
+and large (1400000 quads). These triple counts correspond to about 10\%, 20\%, and 40\% of the total
+generated dataset size.
+
 Our implementations adhere to the RFC-9111 specification~\cite{fielding2022rfc}.
 However, because the benchmark dataset is static, cache entries require no revalidation and never become stale. 
 Consequently, the observed hit rates are likely higher than in a live environment. 
