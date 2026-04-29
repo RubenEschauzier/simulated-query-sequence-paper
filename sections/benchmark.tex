@@ -37,12 +37,11 @@ QLever~\cite{bast2017qlever}.
 We then randomly sample the returned result set 
 to instantiate the subsequent query template. 
 If a query yields no results, 
-we fall back to our default, interest-based instantiation methodology 
-(Section~\ref{ss:userinterests})\rt{This is referencing the same section as we're in right now. (see PDF output)}.
+we fall back to our default, interest-based instantiation methodology.
 
 Finally, we simulate logical session switching. 
 Drawing from web browsing behavior, we assign each sequence a session-switching probability sampled from a log-normal 
-distribution with a mean of 15\% \rt{Is this percentage derived from some experimental findings? Something you can cite?}. 
+distribution with a mean of 15\%~\cite{meiss_whats_2009,schneider2009understanding}. 
 During sequence generation, a session switch triggers a random choice with equal probability: the engine either starts a new 
 session (using interest-based instantiation) or resumes a previous one (deriving instantiation values from that session's last executed query).
 To prevent repetitive queries and maintain a uniform distribution of template instantiations, 
@@ -182,11 +181,8 @@ choke points:
     of \texttt{OPTIONAL} and \texttt{UNION} blocks (Choke point P.2).
 \end{itemize}
 
-
-We exclude the \textbf{Bug Fixing} and \textbf{Shifting Query Intent} patterns, as 
-these do not easily \rt{Reviewers might not be happy with this reason. I'd either ignore it, or explicitly defer it to future work.} translate into composable programmatic rules that guarantee valid 
-queries regardless of application order. Finally, because our refinement rules are 
-fully composable, the generator naturally reflects the empirical observation that 
+As our refinement rules are fully composable, 
+the generator naturally reflects the empirical observation that 
 exploratory patterns are not mutually exclusive and frequently co-occur within a single 
 session.
 

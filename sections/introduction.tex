@@ -47,9 +47,11 @@ This approach strengthens user autonomy, yet it makes query execution more diffi
 
 Traditional federated querying approaches~\cite{schwarte2011fedx,schmidt2011fedbench,heling2022federated} support decentralization of sources, but typically assume a small (10-100) set of well-described and consistently available endpoints~\cite{dang2023fedshop}. 
 These assumptions fail once data is spread across thousands of small units that enforce local access-control policies.
-In addition, enforcing fine-grained access control policies~\cite{esteves2021odrl} on large sources with expressive interfaces introduces notable overhead~\cite{padia2015attribute}, making standard approaches unsuitable for highly decentralized environments.
+In addition, enforcing fine-grained access control policies~\cite{esteves2021odrl} on large sources with expressive interfaces introduces notable 
+overhead~\cite{padia2015attribute}, making standard approaches unsuitable for highly decentralized environments.
 
-Newer decentralized environments, such as Solid, often expose data as lightweight HTTP resources~\cite{verborgh2016triple} \rt{The citation is about lightweight interfaces, but TPF is not used in Solid, so this citation might be confusing here.} instead of highly expressive query interfaces. 
+Newer decentralized environments, such as Solid, often expose data as \\lightweight HTTP resources
+instead of highly expressive query interfaces. 
 Many of these resources are not known in advance and can only be discovered during query execution. 
 Their simplicity lowers the cost of enforcing fine-grained controls.
 This setting requires a federation model that can operate over a very large number of small sources, many of which may be encountered at runtime, without relying on prior aggregation. 
@@ -73,30 +75,29 @@ or relevance indexes to efficiently execute LTQP queries \newline \cite{tam2024o
 While these approaches offer greater performance benefits, they require the server to maintain these indexes.
 This raises the cost of serving resources and complicates privacy and access control.
 
-To avoid this server-side overhead, engines can derive prior knowledge directly on the client.
-In decentralized settings, LTQP is inherently client-side, with one engine instance serving a single user.
-\rt{I recommend rephrasing the following slightly. Instead of talking about the \emph{user} issuing queries, I would rephrase this towards one or more applications}
-As users issue sequences of potentially correlated queries, the engine can identify frequently accessed data and its characteristics.
-This enables engines to implement \emph{personalized} query optimization algorithms that leverage these access patterns to acquire the necessary prior knowledge.
-\rt{If space permits, I'd add a figure here that illustrates this "personalized" aspect here. For example where a user interacts with an app, and that app issues multiple queries to the same query engine, and leads to some overlapping HTTP requests.}
-
-\rt{The following two paragraphs make the intro quite long. Not sure, but I wonder if they would not be better moved to related work, and more summarized to their essence here within this intro?}
+To avoid server-side overhead, engines can derive prior knowledge directly on the client.
+In decentralized settings, LTQP is inherently client-side, with a single engine instance serving one or more applications.
+As these applications issue sequences of correlated queries,
+the engine identifies frequently accessed data and its characteristics.
+This allows engines to implement \emph{personalized} query optimization algorithms 
+that leverage local access patterns to build necessary prior knowledge.
+% \rt{If space permits, I'd add a figure here that illustrates this "personalized" aspect here. For example where a user interacts with an app, and that app issues multiple queries to the same query engine, and leads to some overlapping HTTP requests.}
 
 % TODO: ChatGPT
-Benchmarking these approaches requires a benchmark that reflects the query sequences and correlations that LTQP engines may encounter when used by real clients over real data.
-Existing benchmarks such as WatDiv~\cite{alucc2014diversified} and BSBM~\cite{bizer2011berlin} mainly instantiate multiple versions of the same query template and run them sequentially, often with repetitions to reduce statistical noise.
-This paradigm is not sufficient for evaluating client-side query optimization, because it either overstates performance due to repeated executions of the same query or template, or understates it when these instantiations are randomly mixed to avoid such overestimation.
+Benchmarking these approaches requires realistic query sequences.
+Traditional benchmarks (e.g., WatDiv~\cite{alucc2014diversified}, BSBM~\cite{bizer2011berlin}) 
+execute isolated or repeated query templates, which fails to capture client-side dynamics accurately. 
+Furthermore, while centralized SPARQL optimization relies on
+real query logs~\cite{berendt2013usewod2013,picalausa_what_2011,bonifati_darql_2018,stadler2024lsq}, 
+such logs do not yet exist for decentralized LTQP environments. 
+Consequently, we need a standardized benchmark that realistically simulates user query sequences 
+to prevent fragmented evaluation practices.
 
-In caching literature, which can be viewed as a form of personalized query optimization, the main evaluation methods are simulated micro benchmarks~\cite{martin2010improving,hartig2011caching} and macro benchmarks~\cite{williams2011enabling,folz2016cyclades,hartig2011caching,chatzopoulos2022atrapos,papailiou2015graph} that use query sequences.
-These simulated benchmarks are often created specifically for a single paper, leading to a fragmented landscape of benchmarking methodology. 
-Whenever possible, real query sequences are used~\cite{hartig2012populating,lorey2013caching,zhang2016secf}.
-For centralized SPARQL query optimization, such query logs~\cite{berendt2013usewod2013,picalausa_what_2011,bonifati_darql_2018,stadler2024lsq} are publicly available. 
-However, for personalized query optimization in LTQP, real-world query logs from applications built on structured decentralized environments are not yet available. 
-To avoid the fragmented evaluation practices seen in caching literature, we need a benchmark that can simulate such query sequences in a way that is representative of real-world usage.
-
-In this paper, we address this gap in benchmarking literature \rt{---> "in benchmarks"?} by extending SolidBench~\cite{taelman2023link}, an existing LTQP benchmark \rt{SolidBench is not specifically an LTQP benchmark though. LTQP is just one way of executing the queries of that benchmark.}, to generate query sequences.
-These sequences capture three query engine usage patterns identified in the literature on social network applications, which SolidBench simulates, as well as patterns observed in real-world SPARQL query logs.
-This extension \rt{Be careful with positioning it as an extension, as reviewers may consider it "just" an extension. I'd position it as a new benchmark, which builds upon SolidBench.} allows researchers to evaluate personalized query optimization techniques against patterns they are likely to encounter when these methods are deployed in real client-facing applications.
+In this paper, we address this gap in existing benchmarks by introducing SolidSeqBench, a new benchmark that builds upon SolidBench~\cite{taelman2023link} to generate realistic query sequences.
+These sequences capture three usage patterns identified in social network application literature,
+the domain simulated by SolidBench, alongside patterns observed in real-world SPARQL logs.
+Consequently, our benchmark enables researchers to evaluate personalized query optimization techniques 
+against the actual user behaviors they will encounter in real client-facing applications.
 
 To test our benchmark, we implement three caching strategies in the LTQP engine Comunica~\cite{taelman2018comunica,taelman2023link}.
 These strategies are intentionally simple, but they provide a clear view of the benchmark’s performance characteristics and will demonstrate (insert here when results are in).
