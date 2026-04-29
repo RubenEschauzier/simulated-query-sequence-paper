@@ -30,12 +30,12 @@
 
 \begin{document}
 %
-\title{SolidSeqBench: Realistic Query Sequences for Decentralized Environments} 
+\title{SolidSessionBench: Realistic Query Sequences for User-Oriented Decentralized Environments} 
 \author{Ruben Eschauzier\inst{1}\orcidID{0000-0002-6475-806X} \and
 Ruben Taelman\inst{1}\orcidID{0000-0001-5118-256X}}
 
 \institute{Department of Electronics and Information Systems, Ghent University – imec}
-\titlerunning{SolidSeqBench: Realistic Query Sequences for Decentralized Environments}
+\titlerunning{SolidSessionBench: Realistic Query Sequences for User-Oriented Decentralized Environments}
 
 %
 % \authorrunning{F. Author et al.}
@@ -53,7 +53,9 @@ Ruben Taelman\inst{1}\orcidID{0000-0001-5118-256X}}
 Optimizing queries in decentralized environments, 
 where data sources are often unknown and dynamically discovered, 
 remains a major challenge due to the lack of prior knowledge about data distribution and availability.
-Because client-side applications repeatedly use the same query engine, they create unique optimization opportunities.
+To build user-facing applications on top of such decentralized data, 
+client-side query engines offer a natural place to handle data integration.
+Because these user-facing applications repeatedly use the same client-side query engine, they create unique optimization opportunities.
 % Need:         Why something needed to be done at all
 User-specific engines can capitalize on these opportunities by exploiting patterns in previously issued queries.
 However, existing benchmarks fail to accurately capture the specific characteristics and behavioral variability of user-centric workloads,
