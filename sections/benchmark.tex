@@ -28,7 +28,8 @@ To model logical sessions, we categorize queries into four primary topics:
 person-specific messages, forum information, person attributes, and message attributes. 
 Because queries in decentralized environments often depend on preceding results, 
 we map the output types of each template to valid subsequent templates. 
-This creates a directed graph of query progression that governs the flow of a logical session.\rt{If you can't add a figure in the introduction, I'd add one here, to illustrate what you explain in this paragraph.}
+This creates a directed graph of query progression that governs the flow of a logical session.
+% \rt{If you can't add a figure in the introduction, I'd add one here, to illustrate what you explain in this paragraph.}
 
 Within a session, a template's \emph{instantiation values} are typically derived 
 from the previous query's results. 
@@ -67,11 +68,10 @@ We use this interest-driven topology to generate template instantiation values
 for the initial query of each logical session. 
 (As established, subsequent queries derive their values from preceding result sets). 
 Specifically, we construct a binary feature vector $v_{k}$ for each user $k$:
-
-\begin{equation}
-    v_{k} = (x_{k,1}, \dots, x_{k,n}, y_{k,1}, \dots, y_{k,m}),
-\end{equation}
-
+$ v_{k} = (x_{k,1}, \dots, x_{k,n}, y_{k,1}, \dots, y_{k,m})$,
+% \begin{equation}
+%     v_{k} = (x_{k,1}, \dots, x_{k,n}, y_{k,1}, \dots, y_{k,m}),
+% \end{equation}
 where $x_{k,j}=1$ if user $k$ holds stated interest $j$, and $y_{k,l}=1$ 
 if user $k$ completed study $l$.
 

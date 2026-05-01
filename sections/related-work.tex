@@ -35,95 +35,69 @@ the next best option is a unified simulated benchmark.
 A shared benchmark would provide a common basis for comparison, improve reproducibility,
 and prevent each paper from having to create its own evaluation methodology.
 
-% \textbf{Simulated micro benchmarks} attempt to isolate performance gains of the benchmarked approaches by fixing certain aspects of query execution.
-% This can range from fixing the cached data size~\cite{hartig2011caching} to controlling the percentage of query-relevant data present in the cache \cite{nicholson2024hpcache}. Fixing aspects of query execution makes it easier to isolate and understand the effect of specific caching mechanisms. 
-% However, it also gives an incomplete picture, because we don’t know how those fixed conditions relate to real workloads or how the methods perform when those assumptions don’t hold.
-
-% \textbf{Simulated end-to-end query benchmarks} use generated query sequences to evaluate performance. 
-% They aim to measure cache hit rate and overall execution behavior under the assumption that the simulated sequences reflect realistic usage.
-% In practice, the simulation is usually built by extending an existing benchmark so that it generates sequences instead of isolated queries. 
-% The sequence order is often determined by simple rules or by random selection.
-
-% A common approach is to use queries from existing benchmarks such as the Star Schema Benchmark \cite{o2009star} or the Berlin SPARQL Benchmark~\cite{bizer2011berlin}.
-% These queries are then randomly divided into sequences \cite{hartig2011caching,nicholson2024hpcache,folz2016cyclades}, with each sequence executed using a shared cache. This approach is straightforward but not realistic.
-% Prior work shows that real workloads contain user behavior patterns and temporal locality, and these patterns can be exploited by caching methods.
-% Random sequences fail to capture these properties.
-
-% More realistic is to adjust the query generators of existing benchmarks to include patterns in the query sequences.
-% Some works~\cite{williams2011enabling,martin2010improving} use a Pareto distribution to decide what entity is used to instantiate a query template.
-% This follows from the observation that many human activities follow a Pareto distribution~\cite{arnold2014pareto},
-%  with many queries relating to a small portion of the entities.
-
-% A third approach uses simulated query sequences that reflect the access patterns of specific applications.
-% One example is a workload that models data scientists exploring different aspects of the same entity—such as an author in a scholarly network—through consecutive, thematically related queries~\cite{chatzopoulos2022atrapos}.
-% Such simulations often include multiple query sessions, with new sessions beginning according to a probability parameter $p$.
-% Another example is a simulated application scenario focused on retrieving information about vacation destinations, which is used to assess caching effectiveness~\cite{martin2010improving}.
-
-% \textbf{Real-world query logs} Whenever available, query logs from actual applications form a highly relevant benchmarking approach.
-% However, obtaining these query logs can be challenging.
-% For SPARQL query optimization, query logs for a variety of endpoints are available, such as DBpedia~\cite{saleem2015lsq,stadler2024lsq,berendt2013usewod2013} and Wikidata~\cite{stadler2024lsq}.
-% These logs are extensively used in benchmarking SPARQL-based approaches~\cite{zhang2016secf,papailiou2015graph,lorey2013caching}.
-
-% The evaluation of personalized LTQP optimization would ideally use real-world query logs, but such logs do not exist.
-% To avoid the fragmented evaluation practices of current simulated approaches, the next best option is a unified simulated benchmark. 
-% A shared benchmark would provide a common basis for comparison, improve reproducibility, and prevent each paper from recreating its own evaluation setup.
-
 \subsection{Real-world Query Usage Patterns}
 \label{sec:related_work_qup}
 To inform the benchmark design on what patterns should be simulated, we will outline three relevant client query usage patterns observed in the literature. The relevance is determined for our social network application use case.
 
 \textbf{User Interest-Based Query Behavior}
-Work on social networks shows that users tend to form communities based on shared interests~\cite{mislove2007measurement,clark2007understanding,backstrom2006group,kalaitzakis2012evolution}.
-These studies also show that user–user and user–content graphs exhibit power-law degree distributions, small-world structure, and scale-free properties. The result is a dense core of high-degree nodes that connect many smaller, strongly clustered groups of low-degree nodes~\cite{mislove2007measurement}.
-Simulation studies of social behavior further support the idea that interest-driven group formation is stable and can be modeled reliably~\cite{amblard2015models,hamill2009social}.
+Work on social networks shows users form communities based on shared interests~\cite{mislove2007measurement,clark2007understanding,backstrom2006group,kalaitzakis2012evolution}. 
+These networks exhibit power-law degree distributions, small-world structures, and scale-free properties. 
+This topology creates a dense core of high-degree nodes that connect many smaller, strongly clustered groups~\cite{mislove2007measurement}. 
+Simulation studies confirm that this interest-driven group formation is stable and reliably modeled~\cite{amblard2015models,hamill2009social}.
 
-Research shows that users interact more frequently with others who share similar interests \cite{mitzlaff2013user}. As noted in the study:
-\begin{quote}
-This confirms in a more formal way that shared interests between users are reflected in a higher degree of interaction between them—in an implicit or explicit manner.
-\end{quote}
-These findings support the simulation of user-relatedness and interest-driven behavior when generating query sequences.
+Furthermore, empirical research formally establishes that shared interests directly drive a higher degree of explicit and implicit interactions between users~\cite{mitzlaff2013user}. 
+These findings justify our simulation of user-relatedness and interest-driven behavior when generating query sequences.
 
 \textbf{Logical Query Sessions}
-Analysis of web browsing behavior shows that activity can be grouped into sessions~\cite{meiss_whats_2009,sadagopan2008characterizing,schneider2009understanding}.
-Rather than being defined purely by time, these sessions are better represented as logical sessions~\cite{meiss_whats_2009,schneider2009understanding}, which capture activity focused on a specific topic or goal.
+Analysis of web browsing behavior shows that activity is best grouped into \emph{logical sessions}: sequences of user interactions focused on specific goals, 
+rather than purely time-bound intervals~\cite{meiss_whats_2009,sadagopan2008characterizing,schneider2009understanding}. 
+These task-oriented sessions frequently involve non-linear navigation, 
+including backtracking. 
+New sessions begin in approximately $15\%$ of clicks, 
+following a log-normal distribution with average size and depth means of 6.1 and 3, respectively. 
 
-Rather than being defined purely by time, web browsing activity is better represented as \emph{logical sessions}
-that capture sequences of user interactions
-focused on a specific topic or goal~\cite{meiss_whats_2009,schneider2009understanding}.
-These task-oriented sessions frequently involve non-linear navigation patterns,
-including backtracking.
-New sessions start in approximately $15\%$ of clicks and follow a log-normal distribution.
-The average size and depth of logical sessions have log-normal means of 6.1 and 3, respectively. 
+These patterns also appear in application navigation. 
+In a decentralized social media application, for example, 
+a user viewing a feed might click a creator's username, view comments, or like a post. 
+Because the parameters of each new query derive directly from the preceding query's results, 
+these queries chain together into structures mirroring logical web sessions. 
+Additionally, direct searches for specific posts or topics reflect standard session-switching behavior. 
 
-These same patterns are also exhibited by queries generated during application navigation.
-Consider the use-case of a social media application built upon decentralized data stores.
-When users view their feed, they might interact by clicking the username of a post's creator, viewing the comments, or liking the post.
-In each instance, the parameters of the newly generated query are derived directly from the results of the preceding `feed' query.
-These queries are thus chained together in a structure that mirrors logical web sessions.
-Furthermore, users might search for specific posts, people, or topics, reflecting standard logical session-switching behavior. 
-
-Consequently, interactive application usage generates sequences of interdependent requests~\cite{vogele2018wessbas}, where subsequent queries rely heavily on preceding results.
-This is reflected in Facebook's TAO data store, which is explicitly optimized for workloads where data access patterns are driven by the user's step-by-step traversal of the social graph within the application interface~\cite{bronson2013tao}.
+Consequently, interactive applications generate sequences of interdependent requests~\cite{vogele2018wessbas}. 
+This dynamic informs the design of Facebook's TAO data store, 
+which is explicitly optimized for workloads driven by the user's step-by-step traversal of the social graph within the interface~\cite{bronson2013tao}.
 
 \textbf{Query Refinement}  
-Analysis of SPARQL queries issued to the DBpedia endpoint reveals that 
-users frequently submit related queries in streaks~\cite{bonifati2020analytical,zhang2020characterizing}. 
-These streaks consist of query sequences that share an underlying intention but undergo 
-iterative refinement to achieve the user's objective. 
-Previous studies initially introduced the concept of SPARQL query sessions specifically to analyze 
-robotic queries~\cite{zhang2020characterizing,bonifati2020analytical}.
+DBpedia SPARQL logs show users frequently submit related queries in streaks. 
+In these streaks, queries share an underlying goal 
+and are iteratively refined to achieve this objective~\cite{bonifati2020analytical,zhang2020characterizing}. 
+While early session studies focused on robotic traffic~\cite{zhang2020characterizing,bonifati2020analytical}, 
+our benchmark models organic sequences generated through software interactions~\cite{zhang2020characterizing,malyshev2018getting}. 
+Because application design, rather than underlying data organization, drives these organic queries, 
+we expect these patterns to also exist in decentralized environments. 
+We exclude robotic queries from our benchmark, 
+as these rely heavily on templated query executions that traditional benchmarks can already simulate~\cite{taelman2023link,bizer2011berlin,alucc2014diversified}. 
+Finally, across all query logs, analysis of total usage and reformulations shows that 
+adding or removing FILTER, UNION, and OPTIONAL operators drives the vast majority of reformulations.
 
-In this benchmark, we focus on organic query sequences~\cite{zhang2020characterizing}, 
-which users generate through interactions with software or browsers~\cite{malyshev2018getting}.
-Because organic interactions are driven by application design rather than underlying data organization, 
-we assume these user behaviors will also emerge in applications navigating structured decentralized environments
-Furthermore, we deprioritize robotic queries because their sequences can 
-already be simulated by traditional benchmark approaches~\cite{taelman2023link,bizer2011berlin,alucc2014diversified}.
+% Analysis of SPARQL queries issued to the DBpedia endpoint reveals that 
+% users frequently submit related queries in streaks~\cite{bonifati2020analytical,zhang2020characterizing}. 
+% These streaks consist of query sequences that share an underlying intention but undergo 
+% iterative refinement to achieve the user's objective. 
+% Previous studies initially introduced the concept of SPARQL query sessions specifically to analyze 
+% robotic queries~\cite{zhang2020characterizing,bonifati2020analytical}.
 
-For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
-of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
+% In this benchmark, we focus on organic query sequences~\cite{zhang2020characterizing}, 
+% which users generate through interactions with software or browsers~\cite{malyshev2018getting}.
+% Because organic interactions are driven by application design rather than underlying data organization, 
+% we assume these user behaviors will also emerge in applications navigating structured decentralized environments
+% Furthermore, we deprioritize robotic queries because their sequences can 
+% already be simulated by traditional benchmark approaches~\cite{taelman2023link,bizer2011berlin,alucc2014diversified}.
 
-Recent analyses of Wikidata query logs demonstrate that query development is an iterative process of design,
+% For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
+% of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
+
+Recent analyses of Wikidata query logs further demonstrate that query development is an iterative process of design,
 debugging, and maintenance~\cite{arenas2025exploring}.
 Based on this empirical data, 
 exploratory querying encompasses six core behaviors~\cite{arenas2025exploring}:
