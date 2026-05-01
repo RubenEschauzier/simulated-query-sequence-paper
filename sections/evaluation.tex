@@ -1,23 +1,19 @@
 \section{Evaluation}
-We evaluate our benchmark using a SolidBench dataset at a scale of 0.1, 
-generating 158,233 RDF files across 1,531 data vaults with a total of 3,556,159 triples.
-We generate 8 query sequences totaling 192 query instances using the default hyperparameters
-in Table~\ref{tab:generation_hyperparameters}.
-We run all experiments on a 64-bit Ubuntu 20.04.6 machine with an Intel Core i5-9400 CPU at 2.90GHz, 
-allocating a maximum of 16 GB of RAM to the query engine and enforcing a 180-second timeout per query. 
-We repeat each sequence 10 times to reduce measurement variance.
-Because the server and client share the same machine, 
-we simulate realistic network conditions by introducing a uniformly sampled latency between 70 and 90 ms.
+We evaluate our benchmark using a scale 0.1 SolidBench dataset 
+(158,233 RDF files, 1,531 vaults, 3,556,159 triples). 
+Using the default hyperparameters in Table~\ref{tab:generation_hyperparameters}, 
+we generate 8 sequences totaling 192 queries. 
+Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400) 
+with 16 GB RAM allocated to the engine and a 180-second query timeout. 
+We repeat each sequence 10 times to minimize variance and 
+inject a uniform 70–90 ms latency to simulate a realistic network environment.
 
-Our experiments serve a primary and a secondary purpose.
-Primarily, we evaluate the simulated query sequences to determine how our three design choices impact query correlation.
-Because caching algorithms primarily express this correlation in \textit{hit rates} and \textit{evictions},
-we validate the benchmark by these metrics.
-Secondarily, we apply the implemented caching approaches to establish a performance baseline 
-for caching in a single-threaded LTQP engine.
-While we report the observed execution speedups to demonstrate the benchmark's utility, 
-our focus remains on validating the sequence generation 
-rather than conducting an exhaustive performance analysis of the caching algorithms themselves.
+These experiments serve two goals. 
+Primarily, we validate the sequence generation by assessing how our three 
+design choices impact query correlation, measured via cache \textit{hit rates} and \textit{evictions}. 
+Secondarily, we establish a caching performance baseline for a single-threaded LTQP engine. 
+While we report execution speedups to demonstrate the benchmark's utility, 
+our focus is on validating the benchmark design rather than exhaustively evaluating the caching algorithms.
 
 \subsection{Global Cache Performance}
 
@@ -39,23 +35,24 @@ As expected, all caching methods outperform the baseline.
     \label{fig:global_cache_performance}
 \end{figure}
 
-For the unindexed cache, small (350,000 triples) and medium (700,000 triples) sizes perform similarly. 
-The large cache (1,400,000 triples) shows significant improvement, 
-indicating it reaches the critical capacity needed to retain entries across the entire query sequence. 
-However, the baseline \emph{solves} more total queries. 
-This indicates that cache management overhead causes some long-running queries to fail before the deadline.
+For the unindexed cache, small (350,000 triples) and medium (700,000 triples) sizes 
+perform similarly, while the large cache (1,400,000 triples) significantly improves speed 
+by reaching the critical capacity required to retain entries across the sequence. 
+However, the baseline still \emph{solves} more total queries, suggesting that cache 
+management overhead causes some long-running queries to time out.
 
-The indexed cache results support this, showing an even higher proportion of failed queries.
-This aligns with the hypothesis that higher indexing costs slow down execution during frequent cache evictions.
-Yet, when the indexed cache succeeds, it provides a larger performance boost than the unindexed cache.
-Additionally, the indexed cache has a lower critical capacity threshold, as medium and large sizes perform similarly.
+The indexed cache shows an even higher failure rate, confirming that initial 
+indexing costs slow execution during frequent evictions. 
+Yet, for successful queries, the indexed cache yields a larger performance boost than unindexed ones. 
+The indexed cache also demonstrates a lower critical capacity, 
+as medium and large sizes perform similarly.
 
-Finally, the indexed cache with cardinality estimation performs best. 
-It significantly improves query speeds and solves \emph{more} queries than the baseline. 
-For this method, increasing the cache size does not improve performance;
-in fact, the large cache performs worse than the small and medium versions.
-This suggests cardinality estimation benefits from a smaller, less stale cache, 
-because the estimation process evaluates all cache entries rather than just traversal-relevant ones.
+Ultimately, the indexed cache with cardinality estimation performs best, 
+improving execution speeds and solving \emph{more} total queries than the baseline. 
+Notably, increasing the cache size degrades performance for this method, 
+with the large cache underperforming the smaller versions. 
+This implies that cardinality estimation benefits from a smaller, less stale cache, 
+as the estimation process evaluates all cache entries rather than just traversal-relevant ones.
 
 
 \subsection{Logical Sessions}
@@ -109,6 +106,13 @@ as queries undergo sequential refinement.
 Across all algorithms, hit rates increase at depths 2 and 3, 
 confirming that refinement heavily reuses prior data.
 
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/combined_cache_efficiency.pdf}
+    \caption{Cache hit ratios and percentage of cache capacity evicted across refinement depths for small, medium, and large cache configurations.}
+    \label{fig:cache_efficiency}
+\end{figure}
+
 At higher refinement depths, 
 performance depends heavily on cache capacity. 
 Large caches sustain high hit rates through depth 4, 
@@ -140,12 +144,7 @@ ultimately impacting cache eviction and hit performance.
 % This scheduling variance alters the traversal order and rate, 
 % which subsequently impacts cache eviction cycles and overall hit performance.
 
-\begin{figure}[htpb]
-    \centering
-    \includegraphics[width=\textwidth]{figures/combined_cache_efficiency.pdf}
-    \caption{Cache hit ratios and percentage of cache capacity evicted across refinement depths for small, medium, and large cache configurations.}
-    \label{fig:cache_efficiency}
-\end{figure}
+
 
 The observed cache hitrate and eviction differences directly translate to measurable execution speedups.
 Figure 2 illustrates that the geometric mean speedup for mainly throughput generally scales positively with refinement depth. 
@@ -162,37 +161,56 @@ achieving substantial throughput gains at depth 4 compared to the unindexed alte
 
 
 \subsection{Theoretical Hit Rate Analysis}
-To analyze theoretical caching speedup without management costs, we executed one instance of each query template twice 
-and simulated cache misses at varying probabilities. 
-We excluded the estimation-based approach because using the full cache for estimation would skew the results.
+To analyze theoretical caching speedup without management costs, 
+we executed each query template twice with simulated cache miss probabilities. 
+We excluded the estimation-based approach, 
+as using the full cache for estimation would skew the results for miss rates above zero.
 
-From Figures~\ref{fig:theoretical_cache_performance} and~\ref{fig:theoretical_query_cache_performance}, we find that in most cases caching can significantly improve query execution time, 
-with improvements scaling predictably as hit rate increases. 
-For some long-running queries such as interactive-discover-6, 7, and short-3 no speedup is observed, with some queries even showing slower result production. 
-These query templates traverse many solid pods, but do not require all traversed data. 
-In such cases, we hypothesize that having access to a cache which serves documents from memory will quickly produce too much data and slow down result production. 
-Thus, waiting for HTTP responses between traversal steps allows the JavaScript event loop to run the join execution pipeline and thus produces results faster as only the first few requests are required for first results.
+Figure~\ref{fig:theoretical_cache_performance} shows representative performance profiles for the workload. 
+Most templates (8 out of 12) show reliable improvement that scales with the hit rate for both algorithms. 
+However, certain long-running queries (e.g., interactive-discover-6, 7, and short-3) show no speedup, 
+and some even experience slowdowns. 
+These templates traverse many solid pods but do not require all traversed data. 
+We hypothesize that rapidly serving documents from an in-memory cache overwhelms the system with data, 
+slowing result production. 
+Conversely, HTTP network latency gives the JavaScript event loop time to process the join execution pipeline, 
+yielding initial results faster since only the first few requests are needed.
 
-The two caching approaches exhibit similar overall performance, though the indexed cache significantly reduces the time-to-first-result across most templates. 
-As expected, an indexed cache is highly advantageous when in the absence of evictions. 
-However, the benchmark results demonstrate that the initial cost of indexing data introduces a clear trade-off:
-it amplifies both the potential speedups and slowdowns compared to an unindexed cache.
+Both caching approaches perform similarly overall, 
+but the indexed cache significantly reduces time-to-first-result across most templates. 
+As expected, indexed caching is highly advantageous without evictions. 
+However, the initial indexing cost creates a trade-off: 
+it amplifies both speedups and slowdowns relative to an unindexed cache. 
+While this micro-benchmark approach aligns with prior literature~\cite{nicholson2024hpcache}, 
+our mixed findings show that micro-benchmarks alone fail to thoroughly evaluate client-side caching optimizations. 
+This limitation demonstrates the clear need for the comprehensive benchmark we introduce in this work.
+
 
 \begin{figure*}[!h]
     \centering
     % Ensure the filename matches your generated PDF
-    \includegraphics[width=\textwidth]{figures/cache-synth-hitrate.pdf}
-    \caption{Theoretical unindexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
+    \includegraphics[width=\textwidth]{figures/synth_hit_rate_reduced.pdf}
+    \caption{ Performance of unindexed and indexed caches across representative query templates. 
+    The y-axis shows the mean speedup relative to a baseline with a 0\% hit rate.
+     Shaded regions denote the 90th percentile }
     \label{fig:theoretical_cache_performance}
 \end{figure*}
 
-\begin{figure*}[!h]
-    \centering
-    % Ensure the filename matches your generated PDF
-    \includegraphics[width=\textwidth]{figures/query-cache-synth-hitrate.pdf}
-    \caption{Theoretical indexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
-    \label{fig:theoretical_query_cache_performance}
-\end{figure*}
+% \begin{figure*}[!h]
+%     \centering
+%     % Ensure the filename matches your generated PDF
+%     \includegraphics[width=\textwidth]{figures/cache-synth-hitrate.pdf}
+%     \caption{Theoretical unindexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
+%     \label{fig:theoretical_cache_performance}
+% \end{figure*}
+
+% \begin{figure*}[!h]
+%     \centering
+%     % Ensure the filename matches your generated PDF
+%     \includegraphics[width=\textwidth]{figures/query-cache-synth-hitrate.pdf}
+%     \caption{Theoretical indexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
+%     \label{fig:theoretical_query_cache_performance}
+% \end{figure*}
 
 
 \subsection{Benchmark Abalations}
