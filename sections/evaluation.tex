@@ -21,17 +21,21 @@ rather than conducting an exhaustive performance analysis of the caching algorit
 
 \subsection{Global Cache Performance}
 
-Figure~\ref{fig:global_cache_performance} presents the global caching performance profiles for each approach
-at various sizes against the no-cache baseline.
+Figure~\ref{fig:global_cache_performance} presents the global caching performance profiles~\cite{dolan2002benchmarking}
+for each approach at various sizes against the no-cache baseline.
 As expected, all caching methods outperform the baseline.
-
 
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
-    \caption{Performance profile of the tested cache algorithms.
-     The y-axis shows the percentage of queries that execute within 
-     a given performance factor (x-axis) of the fastest algorithm for that query.}
+    \caption{Performance profile of the tested cache algorithms. 
+    The y-axis shows the percentage of queries executing within a given performance factor (x-axis) 
+    of the fastest algorithm for that specific query. 
+    To interpret the plot: curves closer to the top-left corner indicate better overall performance.
+    The y-intercept ($x=1$) represents the percentage of queries where an algorithm is the outright fastest.
+    Conversely, the rightward trajectory demonstrates robustness. 
+    For example, a point at $y=80\%$ and $x=2$ indicates the algorithm executes 80\% of the queries at most twice 
+    as slowly as the best available method.}
     \label{fig:global_cache_performance}
 \end{figure}
 
@@ -54,13 +58,11 @@ This suggests cardinality estimation benefits from a smaller, less stale cache,
 because the estimation process evaluates all cache entries rather than just traversal-relevant ones.
 
 
-
-
 \subsection{Logical Sessions}
 To evaluate the impact of logical sessions on caching performance, 
 we analyze the hit rate deviation ($\Delta$) from the overall average when queries initiate a new session, 
 switch to an existing one, or remain in the current session.
-Table \ref{tab:performance_differences} shows that new sessions severely degrade hit rates,
+Table~\ref{tab:performance_differences} shows that new sessions severely degrade hit rates,
 existing session switches cause moderate degradation, and intra-session queries improve performance.
 These effects are strongest in small and medium caches.
 
