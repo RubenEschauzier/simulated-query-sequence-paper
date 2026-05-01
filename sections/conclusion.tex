@@ -1,4 +1,11 @@
 \section{Conclusion}
+In this work, we introduced SolidSessionBench, an evidence-based benchmark that generates realistic query sequences for decentralized environments.
+By explicitly modeling logical sessions, user interests, and iterative query refinement, our benchmark captures critical client-side performance dynamics that traditional, 
+isolated query workloads obscure.
+Our evaluation of caching strategies confirms that integrating these empirical sequence behaviors is essential to accurately assess client-side optimizations.
 
-\todo{Mention maintenance plan about how we have PRs open to add to SolidBench and how SolidBench 
-has been maintained for several years now, so by tying this resource's fate to that we have solid track record}
+To guarantee long-term maintance of the benchmark, we are actively integrating SolidSessionBench into the core SolidBench repository via open pull requests.
+By tying this benchmark to the established SolidBench ecosystem, we leverage its multi-year track record of reliable maintenance and community support. 
+All source code, data, and associated experiment setups are publicly available at \url{https://github.com/RubenEschauzier/simulated-query-sequence-paper}.
+
+\todo{Depending on status of PRs either mention its already integrated or still WIP (Can do this through the url)}

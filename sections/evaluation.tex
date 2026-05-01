@@ -3,6 +3,8 @@ We evaluate our benchmark using a scale 0.1 SolidBench dataset
 (158,233 RDF files, 1,531 vaults, 3,556,159 triples). 
 Using the default hyperparameters in Table~\ref{tab:generation_hyperparameters}, 
 we generate 8 sequences totaling 192 queries. 
+These queries are from the interactive workload, are split into discover and short queries,
+with multiple templates belonging to either of these groups.
 Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400) 
 with 16 GB RAM allocated to the engine and a 180-second query timeout. 
 We repeat each sequence 10 times to minimize variance and 
@@ -159,10 +161,15 @@ achieving substantial throughput gains at depth 4 compared to the unindexed alte
     \label{fig:temporal_throughput}
 \end{figure}
 
+\subsection{Comparison To Other Evaluation Methods}
 
-\subsection{Theoretical Hit Rate Analysis}
-To analyze theoretical caching speedup without management costs, 
-we executed each query template twice with simulated cache miss probabilities. 
+\paragraph{Microbenchmarks - Theoretical Hit Rate Analysis}
+
+Cache literature extensively uses microbenchmarks of various forms 
+to analyze caching performance~\cite{nicholson2024hpcache,hartig2011caching}.
+To compare the conclusions of such a benchmark to the conclusions of the benchmark introduced in this paper
+we investigate theoretical caching speedup without management costs, 
+by executing each query template twice with simulated cache miss probabilities. 
 We excluded the estimation-based approach, 
 as using the full cache for estimation would skew the results for miss rates above zero.
 
@@ -196,27 +203,12 @@ This limitation demonstrates the clear need for the comprehensive benchmark we i
     \label{fig:theoretical_cache_performance}
 \end{figure*}
 
-% \begin{figure*}[!h]
-%     \centering
-%     % Ensure the filename matches your generated PDF
-%     \includegraphics[width=\textwidth]{figures/cache-synth-hitrate.pdf}
-%     \caption{Theoretical unindexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
-%     \label{fig:theoretical_cache_performance}
-% \end{figure*}
 
-% \begin{figure*}[!h]
-%     \centering
-%     % Ensure the filename matches your generated PDF
-%     \includegraphics[width=\textwidth]{figures/query-cache-synth-hitrate.pdf}
-%     \caption{Theoretical indexed cache performance by query template. Lines indicate the mean relative speedup of the repeated query for total execution time, first result, and last result against a $100\%$ miss rate baseline. Shaded regions denote the absolute minimum and maximum variance across iterations.}
-%     \label{fig:theoretical_query_cache_performance}
-% \end{figure*}
-
-
-\subsection{Benchmark Abalations}
-We perform ablation studies to investigate design choices not evaluated in the preceding subsections.
+\paragraph{Random Query Sequences}
+Another common approach is to use random query sequences from an existing 
+benchmark~\cite{o2009star,bizer2011berlin,hartig2011caching,nicholson2024hpcache,folz2016cyclades}.
 Figure~\ref{fig:global_cache_performance_random_sequences} shows execution times 
-for sequences lacking our simulation methodology, created by randomly grouping default SolidBench.js queries.
+for sequences created by randomly grouping default SolidBench.js queries.
 For these random sequences, only large caches perform well,
 while smaller ones degrade below the baseline.
 These results misleadingly suggest that large caches are vital, 
@@ -231,3 +223,12 @@ As expected, the estimation cache performs well in both scenarios because cardin
      a given performance factor (x-axis) of the fastest algorithm for that query.}
     \label{fig:global_cache_performance_random_sequences}
 \end{figure}
+
+\paragraph{Scope and Limitations}
+We evaluate SolidSessionBench against microbenchmarks and random sequences, 
+but explicitly exclude hand-crafted scenarios and simple distributions.
+Hand-crafted methods lack scalability, while simple distributions fail to capture complex user habits.
+By automating logical sessions and user interests, our benchmark functions as a scalable superset of both approaches,
+making direct comparison redundant. 
+By contrast, the compared methods do not incorporate these sequence attributes, 
+and our results show this omission risks drawing inaccurate conclusions.
