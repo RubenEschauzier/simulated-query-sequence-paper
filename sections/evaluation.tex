@@ -19,11 +19,28 @@ our focus is on validating the benchmark design rather than exhaustively evaluat
 
 \subsection{Global Cache Performance}
 
-Figure~\ref{fig:global_cache_performance} presents the global caching performance profiles~\cite{dolan2002benchmarking}
-for each approach at various sizes against the no-cache baseline.
+Figure~\ref{fig:global_cache_performance} compares performance profiles~\cite{dolan2002benchmarking} 
+for each approach against the no-cache baseline. 
 As expected, all caching methods outperform the baseline.
 
-\begin{figure}[htpb]
+For the unindexed cache, 
+small (350k triples) and medium (700k triples) sizes perform similarly. 
+The large cache (1,400k triples) significantly improves speed by retaining enough entries across the sequence.
+However, the baseline resolves more total queries, 
+suggesting cache management overhead causes timeouts for longer queries.
+
+The indexed cache has a higher failure rate, 
+as initial indexing costs slow execution when the eviction rate outweighs the increased efficiency of cache hits. 
+Still, it accelerates successful queries more than the unindexed cache. 
+It also reaches critical capacity sooner, with medium and large sizes performing similarly.
+
+Overall, the indexed cache with cardinality estimation performs best, 
+increasing speed and solving \emph{more} queries than the baseline. 
+Notably, larger cache sizes degrade its performance. 
+Indicating that cardinality estimation favors smaller, fresher caches, 
+as it evaluates all entries rather than only traversal-relevant ones.
+
+\begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
     \caption{Performance profiles of the tested cache algorithms. 
@@ -34,27 +51,6 @@ As expected, all caching methods outperform the baseline.
     (e.g., $x=2, y=80\%$ means 80\% of queries execute within twice the fastest time).}
     \label{fig:global_cache_performance}
 \end{figure}
-
-For the unindexed cache, small (350,000 triples) and medium (700,000 triples) sizes 
-perform similarly, while the large cache (1,400,000 triples) significantly improves speed 
-by reaching the critical capacity required to retain entries across the sequence. 
-However, the baseline still \emph{solves} more total queries, suggesting that cache 
-management overhead causes some long-running queries to time out.
-
-The indexed cache shows an even higher failure rate, confirming that initial 
-indexing costs slow execution during frequent evictions. 
-Yet, for successful queries, the indexed cache yields a larger performance boost than unindexed ones. 
-The indexed cache also demonstrates a lower critical capacity, 
-as medium and large sizes perform similarly.
-
-Ultimately, the indexed cache with cardinality estimation performs best, 
-improving execution speeds and solving \emph{more} total queries than the baseline. 
-Notably, increasing the cache size degrades performance for this method, 
-with the large cache underperforming the smaller versions. 
-This implies that cardinality estimation benefits from a smaller, less stale cache, 
-as the estimation process evaluates all cache entries rather than just traversal-relevant ones.
-
-
 
 \subsection{Logical Sessions}
 To evaluate the impact of logical sessions on caching performance, 
