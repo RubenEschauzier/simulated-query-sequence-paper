@@ -86,28 +86,23 @@ However, optimizing queries in these environments is challenging
 due to a lack of prior knowledge regarding data distribution and availability.
 By repeatedly interacting with the same engine, 
 applications allow the engine to overcome this knowledge gap by exploiting patterns in previously issued queries.
-
 % Need:         Why something needed to be done at all
 However, evaluating these techniques accurately is difficult 
 because public query logs are scarce, 
 and existing benchmarks rely on static, template-based structures 
 that fail to capture realistic behavioral variability.
-
 % Task:         What was undertaken to address the need
 To fill this gap, we introduce an evidence-based simulation 
 of client query usage patterns as a reusable benchmark enabling 
 realistic and reproducible evaluation of client-side optimization techniques.
-
 % Object:       What the present document does or covers
 We demonstrate its utility by evaluating client-side caching strategies 
 for link traversal query processing.
 By comparing our sequence-based approach against traditional, non-sequence-based workloads, 
 we highlight how realistic sequence simulation heavily influences performance evaluations.
-
 % Findings:     What the work done yielded or revealed
 Ultimately, our benchmark reveals important performance dynamics, such as the impact 
 of session switching and query refinement, that traditional workloads do not.
-
 % Conclusion: What the findings mean for the audience
 We conclude that modeling realistic user interactions provides an essential foundation 
 for accurately evaluating client-side optimization techniques in decentralized environments.
