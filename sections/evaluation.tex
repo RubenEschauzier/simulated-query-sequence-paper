@@ -9,13 +9,16 @@ Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400)
 with 16 GB RAM allocated to the engine and a 180-second query timeout. 
 We repeat each sequence 10 times to minimize variance and 
 inject a uniform 70–90 ms latency to simulate a realistic network environment.
+\rt{Important to explain clearly: what is the scope of the cache? At what points is the cache flushed? How does it relate to repeating sequences?}
 
 These experiments serve two goals. 
 Primarily, we validate the sequence generation by assessing how our three 
 design choices impact query correlation, measured via cache \textit{hit rates} and \textit{evictions}. 
-Secondarily, we establish a caching performance baseline for a single-threaded LTQP engine. 
+Secondarily, we establish a caching performance baseline for a single-threaded \rt{Not sure if "single-threaded" is needed here. It might raise more questions than it would do good.} LTQP engine. 
 While we report execution speedups to demonstrate the benchmark's utility, 
 our focus is on validating the benchmark design rather than exhaustively evaluating the caching algorithms.
+
+\rt{Can you briefly hint to the subsections that will come hereafter? (so the reader knows what to expect)}
 
 \subsection{Global Cache Performance}
 
@@ -38,7 +41,7 @@ Overall, the indexed cache with cardinality estimation performs best,
 increasing speed and solving \emph{more} queries than the baseline. 
 Notably, larger cache sizes degrade its performance. 
 Indicating that cardinality estimation favors smaller, fresher caches, 
-as it evaluates all entries rather than only traversal-relevant ones.
+as it evaluates all entries rather than only traversal-relevant ones.\rt{This is surprising. I would expect larger caches to provide more accuracy for cardinality estimation. Not sure what to do with this surprising fact besides just reporting though. Maybe you can double-check if it's really correct?}
 
 \begin{figure}[t]
     \centering
@@ -66,13 +69,14 @@ These findings highlight the need for eviction policies that better retain cross
 and validate our simulation design;
 ignoring session dynamics would obscure critical real-world performance shifts.
 
-Future work should investigate whether query sequences share a frequently accessed core of cache entries.
+Future work should investigate whether query sequences should share a frequently accessed core of cache entries.
 Protecting these entries from eviction could mitigate the performance penalties of session switching.
+\rt{Or: separate caches per sessions need to be kept (which requires engines to identify queries being within a session)}
 
 \begin{table}[htpb]
 \centering
 \caption{
-    Impact of logical session status on algorithm performance. Values represent absolute and percentage cache hit rate deviations from the global template average across new, existing, and within-session queries.
+    Impact of logical session status on algorithm performance. Values represent absolute and percentage cache hit rate deviations from the global template average across new, existing, and within-session queries. \rt{Mention clearly if negative values are good or bad.}
 }
 \label{tab:performance_differences}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r@{\hspace{1em}}r r@{\hspace{1em}}r r@{\hspace{1em}}r @{}}
@@ -107,7 +111,7 @@ confirming that refinement heavily reuses prior data.
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=\textwidth]{figures/combined_cache_efficiency.pdf}
-    \caption{Cache hit ratios and percentage of cache capacity evicted across refinement depths for small, medium, and large cache configurations.}
+    \caption{Cache hit ratios and percentage of cache capacity evicted across refinement depths for small, medium, and large cache configurations.\rt{I would recommend using "Cache hit rate (\%)" on the Y axis}}
     \label{fig:cache_efficiency}
 \end{figure}
 
@@ -121,9 +125,9 @@ Surprisingly, the indexed cache without estimation
 maintains high hit rates even with smaller capacities. 
 This counterintuitive result stems from implementation differences 
 that influence how the single-threaded Node.js event loop 
-schedules asynchronous traversal and join executions. 
+schedules asynchronous traversal and join executions \rt{In order to understand this sentence, we definitely need this high-level description of LTQP, and how it's implemented in Comunica.}. 
 This scheduling variance alters traversal order and rate, 
-ultimately impacting cache eviction and hit performance.
+ultimately impacting cache eviction and hit performance.\rt{I understand the variance, but from this text, I don't understand why this leads to higher hit rate with smaller capacities.}
 
 
 % To evaluate how iterative query development impacts performance, we analyze cache behavior across varying refinement depths.
@@ -144,8 +148,8 @@ ultimately impacting cache eviction and hit performance.
 
 
 
-The observed cache hitrate and eviction differences directly translate to measurable execution speedups.
-Figure 2 illustrates that the geometric mean speedup for mainly throughput generally scales positively with refinement depth. 
+The observed cache hitrate \rt{It's "hit rate", not "hitrate"} and eviction differences directly translate to measurable execution speedups.
+Figure 2 illustrates that the geometric mean speedup for mainly \rt{The "mainly" feels wrong here} throughput generally scales positively with refinement depth. 
 The indexed-cache algorithm proves particularly effective for prolonged exploratory sequences,
 achieving substantial throughput gains at depth 4 compared to the unindexed alternatives.
 
@@ -177,7 +181,7 @@ These templates traverse many solid pods but do not require all traversed data.
 We hypothesize that rapidly serving documents from an in-memory cache overwhelms the system with data, 
 slowing result production. 
 Conversely, HTTP network latency gives the JavaScript event loop time to process the join execution pipeline, 
-yielding initial results faster since only the first few requests are needed.
+yielding initial results faster since only the first few requests are needed.\rt{This last sentence is clear to me, but is another example that requires more background in a dedicated Comunica LTQP description}
 
 Both caching approaches perform similarly overall, 
 but the indexed cache significantly reduces time-to-first-result across most templates. 
@@ -195,7 +199,7 @@ This limitation demonstrates the clear need for the comprehensive benchmark we i
     \includegraphics[width=\textwidth]{figures/synth_hit_rate_reduced.pdf}
     \caption{ Performance of unindexed and indexed caches across representative query templates. 
     The y-axis shows the mean speedup relative to a baseline with a 0\% hit rate.
-     Shaded regions denote the 90th percentile }
+     Shaded regions denote the 90th percentile \rt{Why is the third caching approach not mentioned? If irrelevant, make sure to explain why.}}
     \label{fig:theoretical_cache_performance}
 \end{figure*}
 
