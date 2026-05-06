@@ -4,22 +4,42 @@ By explicitly modeling logical sessions, user interests, and iterative query ref
 isolated query workloads obscure.
 Our evaluation of caching strategies confirms that integrating these empirical sequence behaviors is essential to accurately assess client-side optimizations.
 
-\rt{Since reviewers may ask about this, let's briefly mention the work done around Linked Web Storage. (either here, or earlier in the paper) I'd say that this benchmark uses Solid as a use case, but the underlying concepts are general, and will directly apply to LWS as well (once the working group is ready). You can say that we will provide an LWS-representation once the LWS specs are stable.}
+\rt{Since reviewers may ask about this, let's briefly mention the work done around Linked Web Storage. 
+(either here, or earlier in the paper) I'd say that this benchmark uses Solid as a use case, 
+but the underlying concepts are general, and will directly apply to LWS as well 
+(once the working group is ready). You can say that we will provide an LWS-representation once the LWS specs are stable.}
+
+To ensure long-term maintenance, we have integrated SolidSessionBench into the SolidBench.js repositories.
+This integration allows our benchmark to inherit SolidBench's multi-year track record of reliable upkeep and community support.
+\todo{we formalize thismaintenance plan?}
+Although this resource is newly introduced, it is a seamless extension of SolidBench, 
+which is the standard community resource for evaluating decentralized query execution. 
+Consequently, SolidBench's established user base serves as a highly reliable proxy for the future adoption of this dataset
+when trying to evaluate any client-specific optimization approaches.
+To further facilitate the adoption of this resource, we've extensively documented the code. 
+We refer to \url{https://github.com/RubenEschauzier/simulated-query-sequence-paper}, which serves as a hub pointing towards the required
+links to inspect the documentation, source code, data, and experiment setups.
+Finally, under a permissive MIT license, the framework's modular,
+multi-repository architecture allows researchers to modify specific components without disrupting the broader evaluation pipeline.
+
 
 To guarantee long-term maintance of the benchmark, we are actively integrating SolidSessionBench into the core SolidBench repository via open pull requests.
 By tying this benchmark to the established SolidBench ecosystem, we use its multi-year track record of reliable maintenance and community support. 
 All source code, data, and associated experiment setups are publicly available at \url{https://github.com/RubenEschauzier/simulated-query-sequence-paper}.
 
-\todo{Depending on status of PRs either mention its already integrated or still WIP (Can do this through the url)}
+% \todo{Depending on status of PRs either mention its already integrated or still WIP (Can do this through the url)}
 
 \rt{Some things to incorporate based on the resource review criteria:
 
-Is there evidence of usage by a wider community beyond the resource creators or their project? Alternatively (for new resources), what is the resource’s potential for being (re)used? --> Explain briefly how SolidBench has been adopted as a proxy for how this resource will be used.
+% Is the resource easy to (re)use? For example, does it have high-quality documentation? 
+% Are there tutorials available? --> Are there docs? Make sure to have clear READMEs, and link to them explicitly.
 
-Is the resource easy to (re)use? For example, does it have high-quality documentation? Are there tutorials available? --> Are there docs? Make sure to have clear READMEs, and link to them explicitly.
+% Is there potential for extensibility to meet future requirements? 
+% --> You can probably spend a few words on this as well.
 
-Is there potential for extensibility to meet future requirements? --> You can probably spend a few words on this as well.
-
-Is there a sustainability plan specified for the resource? Is there a plan for the medium and long-term maintenance of the resource? --> You briefly mention this in the conclusion, but I think it would be stronger if we add an explicit sustainability plan for SolidBench (e.g. in its wiki, similar to how we do it for Comunica), and link to it from the paper.
+Is there a sustainability plan specified for the resource? 
+Is there a plan for the medium and long-term maintenance of the resource? 
+--> You briefly mention this in the conclusion, but I think it would be stronger if we add an explicit sustainability plan for SolidBench
+(e.g. in its wiki, similar to how we do it for Comunica), and link to it from the paper.
 
 "Declaration of use of Generative AI” section missing.}

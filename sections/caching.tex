@@ -1,69 +1,114 @@
 \section{Caching in Link Traversal-based Query Processing}
-To make this work self-contained, we first briefly outline the mechanics of Link Traversal-based Query Processing (LTQP).
-Unlike traditional query engines that evaluate queries against a centralized,
-pre-built index, LTQP evaluates queries directly over the live Web using the ``follow-your-nose'' principle of Linked Data. 
-Execution relies on two core components: a \emph{link queue} and an \emph{active local store}.
-The engine initializes the link queue with seed URIs (often extracted from the query).
-It then iteratively dereferences these URIs, retrieving RDF documents.
-The triples from these documents are deposited into the active local store; a temporary, query-specific,
-in-memory dataset over which the SPARQL operators are actually evaluated. 
-Simultaneously, new URIs are discovered within the retrieved data 
-and added to the link queue according to specific \emph{reachability semantics},
-which dictate which links are relevant to follow based on the query structure.
-Furthermore, to optimize memory usage, 
-engines like Comunica~\cite{taelman2018comunica} typically employ \emph{dictionary encoding} within the local store,
-converting lengthy string-based URIs and literals into compact integer identifiers.
+% Unlike traditional query engines that evaluate queries against a centralized,
+% pre-built index, LTQP evaluates queries directly over the live Web using the ``follow-your-nose'' principle of Linked Data. 
+% Execution relies on two core components: a \emph{link queue} and an \emph{active local store}~\cite{taelman2023evaluation,hartig2012sparql}.
+% The engine initializes the link queue with seed URIs (often extracted from the query).
+% It then iteratively dereferences these URIs, retrieving RDF documents.
+% The triples from these documents are deposited into the active local store; a temporary, query-specific,
+% in-memory dataset over which the SPARQL operators are actually evaluated. 
+% Simultaneously, new URIs are discovered within the retrieved data 
+% and added to the link queue according to specific \emph{reachability criterions}~\cite{hartig2009executing},
+% which dictate which links are relevant to follow based on the query structure.
+% Furthermore, to reduce memory usage, 
+% engines like Comunica~\cite{taelman2018comunica} typically employ \emph{dictionary encoding} within the local store,
+% converting lengthy string-based URIs and literals into compact integer identifiers.
 
-Hartig~\cite{hartig2011caching} originally established the fundamental concept of caching within this paradigm,
-demonstrating that keeping a local repository of recently accessed Web documents mitigates
-the high network latency inherent to LTQP.
+% Hartig~\cite{hartig2011caching} originally established the fundamental concept of caching within this paradigm,
+% demonstrating that keeping a local repository of recently accessed Web documents mitigates
+% the high network latency inherent to LTQP.
+
+% To validate the SolidSessionBench query sequences, 
+% we integrated three \\caching approaches into Comunica~\cite{taelman2018comunica,taelman2023link}. 
+% As Comunica is JavaScript-based, 
+% its event loop handles traversal and local query execution as interleaved, 
+% asynchronous processes.
+% The caching approaches cache the triples from documents dereferenced during link traversal in-memory.
+% High cache hit rates eliminate redundant HTTP requests, increasing traversal speed and reducing query latency. 
+% To evaluate how different cache management strategies impact this latency,
+% we compare the following three configurations:
+
+% \paragraph{Unindexed Cache}
+% This baseline approach caches the triples obtained during traversal.
+% Upon a cache hit, these quads are retrieved and indexed into the active local store for query execution.
+% In essence, this approach caches an array of triples, with associated metadata for each source.
+
+% \paragraph{Indexed Cache}
+% Alternatively, we index triples before caching them. 
+% Upon a cache hit, the engine extracts only the triples that match the query's triple patterns. 
+% This approach reduces the local store's memory footprint and indexing overhead for two reasons:
+% dictionary encoding compresses the data, and pre-filtering ensures fewer triples enter the local store. 
+% While this increases the initial cache ingestion cost, we hypothesize the trade-off is positive given sufficiently high hit rates.
+
+% \paragraph{Indexed Cache + Cardinality estimation}
+% As the cache is indexed, it can execute count queries to estimate quad pattern cardinalities.
+% Traditional LTQP relies on zero-knowledge heuristics due to a lack of prior knowledge~\cite{hartig2011zero}.
+% By estimating cardinalities against \emph{all} cached documents,
+% regardless of their reachability for the current query,
+% we can replace these heuristics with Comunica's default cost-based optimizer~\cite{taelman2018comunica}
+% to generate more accurate query plans. \\
+
+% % \rt{It may be helpful for the reader to visually represent these 3 approaches next to each other.}
+
+% For each caching approach, we investigate three sizes of in-memory cache: small (350,000 quads), medium (700,000 quads),
+% and large (1,400,000 triples). These triple counts correspond to about 10\%, 20\%, and 40\% of the total
+% generated dataset size.
+
+% Our implementations adhere to the RFC-9111 specification~\cite{fielding2022rfc}, 
+% meaning the cache correctly interprets standard HTTP headers (like Cache-Control)
+% to determine how long to store data, just like a web browser.
+% However, because the benchmark dataset is static, cache entries require no revalidation and never become stale. 
+% Consequently, the observed hit rates are likely higher than in a live environment. 
+% Furthermore, while the fundamental concept of caching in link traversal is established~\cite{hartig2011caching}
+% integrating and comparing these distinct caching strategies provides novel and strong baselines
+% for evaluating caching in traversal engines, upon which future research
+% into advanced caching approach can build.
+
+Unlike traditional query engines that evaluate queries against a centralized, pre-built index, 
+LTQP evaluates queries directly over the live Web~\cite{taelman2023evaluation,hartig2012sparql} 
+using the ``follow-your-nose'' principle. 
+
+Starting from a seed URI (often extracted from the query), 
+the engine fetches data via a \emph{link queue} (governed by \emph{reachability criteria}~\cite{hartig2009executing}) 
+and deposits the retrieved triples into an \emph{active local store}. 
+This local store is an in-memory dataset over which the query executes, 
+typically utilizing dictionary encoding~\cite{taelman2018comunica}. 
+
+Previous work~\cite{hartig2011caching} established the fundamental concept of caching within this paradigm,
+demonstrating that a local repository of recently accessed Web documents 
+mitigates the high network latency inherent to LTQP.
 
 
+For our experiments, we use the Comunica LTQP engine~\cite{taelman2018comunica,taelman2023link}. 
+As a \\JavaScript-based engine, it relies on the event loop to asynchronously interleave traversal and local query execution. 
+To validate the SolidSessionBench sequences, we integrated three caching approaches into this architecture. 
+These approaches cache dereferenced triples in-memory to reduce latency, and we evaluate their impact by comparing three configurations:
 
-To validate the query sequences generated by the SolidBenchSequence (SBS) benchmark,
-we implemented three caching approaches in the Comunica link traversal engine~\cite{taelman2018comunica,taelman2023link}.
-Specifically, we cache the triples from documents dereferenced during link traversal in-memory.
-High cache hit rates eliminate redundant HTTP requests, increasing traversal speed and reducing query latency. 
-To evaluate how different cache management strategies impact this latency,
-we compare the following three configurations:
-
-\rt{At this point, I realized that you never actually explain how LTQP works (link queue, reachability semantics, ...). Some minimal explanation of this must be added, to make this work self-contained, to make it possible for readers not knowing about LTQP to understand this paper. For example add this in the introduction or literature review.}
-\rt{RE: Mention dictionary encoding in the explanation and then refer back to this to explain why indexed cache will use less
-memory compared to unindexed}
 
 \paragraph{Unindexed Cache}
-This baseline approach caches the triples obtained during traversal.
-Upon a cache hit, these quads are retrieved and indexed into the active local store \rt{Unclear to the reader what the "active local store" is. This for example should be explained in the general description of LTQP.} for query execution.
-\rt{Do I understand it correctly that this approach is essentially just an array of quads/triples?}
+This baseline approach caches raw arrays of triples alongside source metadata. 
+Upon a cache hit, the engine retrieves and indexes these triples into the active local store.
 
 \paragraph{Indexed Cache}
-Alternatively, we index triples before caching them. 
-Upon a cache hit, the engine extracts only triples matching the quad patterns in the current query.
-While this reduces the memory footprint and indexing overhead of the local store, as triples are filtered before
-being added to the store. \rt{It's unclear why this reduces memory usage. The same data is stored, right? Just in a different way?},
-it increases the initial cache ingestion cost. 
-We hypothesize this trade-off is only beneficial given sufficiently high hit rates.
+This approach pre-indexes triples before caching. 
+Upon a hit, the engine extracts only triples matching the query's patterns. 
+This pre-filtering, combined with dictionary encoding, reduces local store memory and indexing overhead, 
+potentially offsetting the higher initial ingestion costs.
 
-\paragraph{Indexed Cache + Cardinality estimation}
-Because the cache is indexed, it can execute count queries to estimate quad pattern cardinalities.
-Traditional LTQP relies on zero-knowledge heuristics due to a lack of prior knowledge~\cite{hartig2011zero}.
-By estimating cardinalities against \emph{all} cached documents,
-regardless of their reachability for the current query,
-we can replace these heuristics with Comunica's default cost-based optimizer~\cite{taelman2018comunica}
-to generate more accurate query plans. \\
+\paragraph{Indexed Cache + Cardinality Estimation}
+This configuration leverages the indexed cache to estimate quad pattern cardinalities 
+across \emph{all} cached documents. 
+This replaces traditional zero-knowledge heuristics~\cite{hartig2011zero} 
+with Comunica's cost-based optimizer~\cite{taelman2018comunica} to generate more accurate query plans.
 
-\rt{It may be helpful for the reader to visually represent these 3 approaches next to each other.}
-
-For each caching approach, we investigate three sizes \rt{I would emphasize here again that you focus on in-memory storage}: small (350,000 quads), medium (700,000 quads),
-and large (1,400,000 triples). These triple counts correspond to about 10\%, 20\%, and 40\% of the total
-generated dataset size.
+We evaluate three cache capacities: small (350k quads, $\sim$10\% of the dataset), 
+medium (700k, $\sim$20\%), and large (1.4M, $\sim$40\%). 
 
 Our implementations adhere to the RFC-9111 specification~\cite{fielding2022rfc}, 
-meaning the cache correctly interprets standard HTTP headers (like Cache-Control)
-to determine how long to store data, just like a web browser.
+meaning the cache correctly interprets standard HTTP headers (e.g., Cache-Control) 
+just like a web browser would. 
 However, because the benchmark dataset is static, cache entries require no revalidation and never become stale. 
-Consequently, the observed hit rates are likely higher than in a live environment. 
-Furthermore, while the fundamental concept of caching in link traversal is established~\cite{hartig2011caching} \rt{This hartig2011caching paper should really be discussed in more detail. Perhaps you can add it to this dedicated LTQP description I asked for above?},
-integrating and comparing these distinct caching strategies provides novel and strong baselines
-for evaluating caching in traversal engines, upon which future research
-into advanced caching approach can build.
+Consequently, observed hit rates are likely higher than in a live environment. 
+
+Ultimately, comparing these strategies establishes strong baselines 
+for caching performance in realistic user-centric environments, 
+upon which future research into advanced caching approaches can build.
