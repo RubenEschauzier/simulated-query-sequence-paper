@@ -9,12 +9,13 @@ Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400)
 with 16 GB RAM allocated to the engine and a 180-second query timeout. 
 We repeat each sequence 10 times to minimize variance and 
 inject a uniform 70–90 ms latency to simulate a realistic network environment.
-\rt{Important to explain clearly: what is the scope of the cache? At what points is the cache flushed? How does it relate to repeating sequences?}
+The cache is scoped for a sequence, meaning no cache-state is shared between different executions or repetitions of
+sequences.
 
 These experiments serve two goals. 
 Primarily, we validate the sequence generation by assessing how our three 
 design choices impact query correlation, measured via cache \textit{hit rates} and \textit{evictions}. 
-Secondarily, we establish a caching performance baseline for a single-threaded \rt{Not sure if "single-threaded" is needed here. It might raise more questions than it would do good.} LTQP engine. 
+Secondarily, we establish a caching performance baseline for a LTQP engine. 
 While we report execution speedups to demonstrate the benchmark's utility, 
 our focus is on validating the benchmark design rather than exhaustively evaluating the caching algorithms.
 
@@ -148,8 +149,9 @@ ultimately impacting cache eviction and hit performance.\rt{I understand the var
 
 
 
-The observed cache hitrate \rt{It's "hit rate", not "hitrate"} and eviction differences directly translate to measurable execution speedups.
-Figure 2 illustrates that the geometric mean speedup for mainly \rt{The "mainly" feels wrong here} throughput generally scales positively with refinement depth. 
+The observed cache hit rate and eviction differences directly translate to measurable execution speedups.
+Figure 2 illustrates that the geometric mean speedup generally scales positively with refinement depth, with 
+a more pronounced effect for the throughput. 
 The indexed-cache algorithm proves particularly effective for prolonged exploratory sequences,
 achieving substantial throughput gains at depth 4 compared to the unindexed alternatives.
 
