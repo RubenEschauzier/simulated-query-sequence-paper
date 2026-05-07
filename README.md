@@ -45,9 +45,10 @@ SolidSessionBench extends four components of the SolidBench ecosystem and is add
 |---|---|---|
 | **jbr.js** | A ready-to-use benchmark runner which handles the initializiation, generation, and running of SolidSessionBench | [jbr.js](https://github.com/rubensworks/jbr.js/tree/master/packages/experiment-solid-session-bench) |
 | **SolidBench.js** | Centralized runner integrating all changes; includes sensible default configurations used throughout the paper | [SolidBench/SolidBench.js](https://github.com/SolidBench/SolidBench.js) |
-| **sparql-query-parameter-instantiator** | Main updated codebase; implements the correlated query sequence generation logic (logical sessions, interest-based instantiation, and refinement patterns) | [SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator](https://github.com/SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator) |
+| **sparql-query-parameter-instantiator** | Main updated codebase; implements the correlated query sequence generation logic (logical sessions, interest-based instantiation, and refinement patterns) | [SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator](https://github.com/SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator)
 | **ldbc-snb-enhancer** | Updated to compute and export interest-based similarity scores between users and their posts, enabling realistic data locality in generated sequences | [SolidBench/ldbc-snb-enhancer.js#similarity-configuration](https://github.com/SolidBench/ldbc-snb-enhancer.js#similarity-configuration) |
 | **rdf-dataset-fragmenter** | Updated to output both original and transformed terms within a quad, enabling fragmented query strings to be mapped back to executable queries over the original SNB dataset | [SolidBench/rdf-dataset-fragmenter.js#transform-callbacks](https://github.com/SolidBench/rdf-dataset-fragmenter.js#transform-callbacks) |
+| **Query Refinement Documentation** | Additional documentation on refinement patterns and their default values | [Refinement Pattern Docs](https://github.com/SolidBench/SolidBench.js/blob/feature/solid-session-bench-pr-version/templates/refinements/README.md) |
 
 ---
 
