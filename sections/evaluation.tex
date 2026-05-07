@@ -1,23 +1,37 @@
 \section{Evaluation}
-We evaluate our benchmark using a scale 0.1 SolidBench dataset 
-(158,233 RDF files, 1,531 vaults, 3,556,159 triples). 
-Using the default hyperparameters in Table~\ref{tab:generation_hyperparameters}, 
-we generate 8 sequences totaling 192 queries. 
-These queries are from the interactive workload, are split into discover and short queries,
-with multiple templates belonging to either of these groups.
-Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400) 
-with 16 GB RAM allocated to the engine and a 180-second query timeout. 
-We repeat each sequence 10 times to minimize variance and 
-inject a uniform 70–90 ms latency to simulate a realistic network environment.
-The cache is scoped for a sequence, meaning no cache-state is shared between different executions or repetitions of
-sequences.
+We evaluate our benchmark using a scale 0.1 SolidBench dataset comprising 158,233 RDF files,
+1,531 vaults, and 3,556,159 triples. Applying the default hyperparameters from Table 1,
+we generated 8 sequences totaling 192 interactive-workload queries, encompassing both discover and short templates.
+Experiments were conducted on an Ubuntu 20.04 machine (Intel Core i5-9400) with 16 GB RAM and a 180-second timeout.
+To minimize variance and simulate realistic networks, we repeated each sequence 10 times with 70–90 ms injected latency 
+to simulate realistic network conditions.
+Caches were scoped to individual sequences, ensuring no state was shared between repetitions. 
 
-These experiments serve two goals. 
-Primarily, we validate the sequence generation by assessing how our three 
-design choices impact query correlation, measured via cache \textit{hit rates} and \textit{evictions}. 
-Secondarily, we establish a caching performance baseline for a LTQP engine. 
-While we report execution speedups to demonstrate the benchmark's utility, 
-our focus is on validating the benchmark design rather than exhaustively evaluating the caching algorithms.
+These experiments aim to validate our sequence generation by assessing how our design choices influence 
+query correlation, measured via cache hit rates and evictions, 
+and to establish a caching performance baseline for a Link Traversal-based Query Processing (LTQP) engine.
+While we report speedups to demonstrate utility, the primary focus is benchmark validation rather than exhaustive algorithm evaluation.  
+
+
+% We evaluate our benchmark using a scale 0.1 SolidBench dataset 
+% (158,233 RDF files, 1,531 vaults, 3,556,159 triples). 
+% Using the default hyperparameters in Table~\ref{tab:generation_hyperparameters}, 
+% we generate 8 sequences totaling 192 queries. 
+% These queries are from the interactive workload, are split into discover and short queries,
+% with multiple templates belonging to either of these groups.
+% Experiments run on an Ubuntu 20.04 machine (Intel Core i5-9400) 
+% with 16 GB RAM allocated to the engine and a 180-second query timeout. 
+% We repeat each sequence 10 times to minimize variance and 
+% inject a uniform 70–90 ms latency to simulate a realistic network environment.
+% The cache is scoped for a sequence, meaning no cache-state is shared between different executions or repetitions of
+% sequences.
+
+% These experiments serve two goals. 
+% Primarily, we validate the sequence generation by assessing how our three 
+% design choices impact query correlation, measured via cache \textit{hit rates} and \textit{evictions}. 
+% Secondarily, we establish a caching performance baseline for a LTQP engine. 
+% While we report execution speedups to demonstrate the benchmark's utility, 
+% our focus is on validating the benchmark design rather than exhaustively evaluating the caching algorithms.
 
 % \rt{Can you briefly hint to the subsections that will come hereafter? (so the reader knows what to expect)}
 
@@ -26,6 +40,20 @@ our focus is on validating the benchmark design rather than exhaustively evaluat
 Figure~\ref{fig:global_cache_performance} compares performance profiles~\cite{dolan2002benchmarking} 
 for each approach against the no-cache baseline. 
 As expected, all caching methods outperform the baseline.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
+    \caption{Performance profiles of the tested cache algorithms. 
+    The y-axis shows the percentage of queries executing within a factor (x-axis) of the fastest algorithm. 
+    Curves closer to the top-left indicate better overall performance. 
+    The y-intercept ($x=1$) shows how often an algorithm is the outright fastest, 
+    while the rightward trajectory demonstrates robustness 
+    (e.g., $x=2, y=80\%$ means 80\% of queries execute within twice the fastest time).
+    From the figure, we observe that all caching-based approaches outperform the no-cache baseline.}
+    \label{fig:global_cache_performance}
+\end{figure}
+
 
 For the unindexed cache, 
 small (350k triples) and medium (700k triples) sizes perform similarly. 
@@ -44,19 +72,6 @@ Notably, larger cache sizes degrade performance.
 A possible mechanism for this is that the estimator evaluates all cache entries,
 including irrelevant unreachable data from past queries. 
 This accumulated noise likely can degrade estimates, suggesting the estimator favors smaller, fresher caches.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{figures/performance_profile.pdf}
-    \caption{Performance profiles of the tested cache algorithms. 
-    The y-axis shows the percentage of queries executing within a factor (x-axis) of the fastest algorithm. 
-    Curves closer to the top-left indicate better overall performance. 
-    The y-intercept ($x=1$) shows how often an algorithm is the outright fastest, 
-    while the rightward trajectory demonstrates robustness 
-    (e.g., $x=2, y=80\%$ means 80\% of queries execute within twice the fastest time).
-    From the figure, we observe that all caching-based approaches outperform the no-cache baseline.}
-    \label{fig:global_cache_performance}
-\end{figure}
 
 \subsection{Logical Sessions}
 To evaluate the impact of logical sessions on caching performance, 

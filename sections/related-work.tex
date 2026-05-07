@@ -80,23 +80,6 @@ as these rely heavily on templated query executions that traditional benchmarks 
 Finally, across all query logs, analysis of total usage and reformulations shows that 
 adding or removing FILTER, UNION, and OPTIONAL operators drives the vast majority of reformulations.
 
-% Analysis of SPARQL queries issued to the DBpedia endpoint reveals that 
-% users frequently submit related queries in streaks~\cite{bonifati2020analytical,zhang2020characterizing}. 
-% These streaks consist of query sequences that share an underlying intention but undergo 
-% iterative refinement to achieve the user's objective. 
-% Previous studies initially introduced the concept of SPARQL query sessions specifically to analyze 
-% robotic queries~\cite{zhang2020characterizing,bonifati2020analytical}.
-
-% In this benchmark, we focus on organic query sequences~\cite{zhang2020characterizing}, 
-% which users generate through interactions with software or browsers~\cite{malyshev2018getting}.
-% Because organic interactions are driven by application design rather than underlying data organization, 
-% we assume these user behaviors will also emerge in applications navigating structured decentralized environments
-% Furthermore, we deprioritize robotic queries because their sequences can 
-% already be simulated by traditional benchmark approaches~\cite{taelman2023link,bizer2011berlin,alucc2014diversified}.
-
-% For both organic and robotic queries, analysis of total usage and reformulations (removals and additions) 
-% of operators over all query logs shows that filter, union, and optional operators account for the vast majority of reformulated queries.
-
 Recent analyses of Wikidata query logs further demonstrate that query development is an iterative process of design,
 debugging, and maintenance~\cite{arenas2025exploring}.
 Based on this empirical data, 
@@ -107,7 +90,7 @@ such as adding superclasses or increasing limits,
 \textbf{result extension} to fetch additional attributes by appending new triple patterns,
 \textbf{bug fixing} to correct structural errors like invalid URIs,
 \textbf{query refinement} to adjust complex language features,
-and \textbf{shifting query intent} to pivot topics by altering core predicates.
+and \textbf{shifting query intent} to switch topic by changing core predicates or URIs in the query.
 
 These findings confirm that real-world querying relies on dynamic, step-by-step modifications rather than the static execution of independent templates.
 Consequently, existing evaluation frameworks fail to capture how users actively interact with data systems. 
