@@ -1,50 +1,69 @@
-The easily reproducible experiments required to obtain the results in this paper are found here:
-https://github.com/RubenEschauzier/experiments-link-traversal-caching-random-query-sequences.
-Each experiment has an easy to follow README.md requiring very little setup.
+# SolidSessionBench
 
-Within this repository the following branches are used in the paper:
-- experiment/cache - The experiments associated with **Unindexed Cache**, running this experiment
-will produce the data for all three cache sizes
-- experiment/query-cache - The experiments associated with **Indexed Cache**, running this experiment
-will produce the data for all three cache sizes
-- experiment/query-cache-estimate - The experiments associated with **Indexed Cache + Cardinality estimation**, running this experiment
-will produce the data for all three cache sizes.
-- experiment/synthetic-cache-hitrate - The experiments ran to get the synthetic hitrate data for the **Unindexed Cache**.
-- experiment/synthetic-query-cache-hitrate - The experiments ran to get the synthetic hitrate data for the **Indexed Cache**.
+This is the paper repository for **SolidSessionBench**, a benchmark that generates realistic query sequences for evaluating client-side query optimization in decentralized environments such as [Solid](https://solidproject.org/).
 
-For the experiments using random query sequences the experiments are found here:
-https://github.com/RubenEschauzier/experiments-link-traversal-caching-random-query-sequences.
+SolidSessionBench extends [SolidBench](https://github.com/SolidBench/SolidBench.js) to simulate three empirically grounded usage patterns — logical query sessions, user interest-based data locality, and iterative query refinement — that isolated single-query benchmarks fail to capture.
+To demonstrate the benchmark's utility, the paper evaluates three baseline client-side HTTP caching strategies in [Link Traversal-based Query Processing (LTQP)](https://linkeddatafragments.org/in-depth/link-traversal/).
 
-Within the repository we have the following branches, similar to the other experiment repo:
-- experiment/cache - The experiments associated with **Unindexed Cache**, running this experiment
-will produce the data for all three cache sizes
-- experiment/query-cache - The experiments associated with **Indexed Cache**, running this experiment
-will produce the data for all three cache sizes
-- experiment/query-cache-estimate - The experiments associated with **Indexed Cache + Cardinality estimation**, running this experiment
-will produce the data for all three cache sizes.
+This repository serves as a central hub linking to the source code, experiment setups, and raw data associated with the paper.
 
-The raw data produced by these experiments is found on Zenodo: \url{https://zenodo.org/records/20056413}.
-We use this python repository to process this data and generate the figures and tables from the paper: https://github.com/RubenEschauzier/process-raw-caching-jbr-output.
+---
 
+## Reproducible Experiments
 
-The source code and documentation for the different code bases updated to create SolidSessionBench are:
--  The LDBC-SNB enhancer: Updated to generate similarity data between users and users and their posts. Documentation and source code is available:
-https://github.com/SolidBench/ldbc-snb-enhancer.js#similarity-configuration. 
-- The rdf-dataset-fragmenter: Updated to allow the rdf-dataset-fragmenter to output the original and transformed terms within a quad.
-This allows us to map a fragmented query string (with transformed NamedNodes) to a query which we can execute over the original SNB dataset.
-Documentation and code are available here: https://github.com/SolidBench/rdf-dataset-fragmenter.js#transform-callbacks
-- The sparql-query-parameter-instantiator: The main updated codebase, Here we've added the complex query sequence generation logic, supported
-by the functionalities added in the other repositories. (TODO: Explain briefly what this does)
-Documentation and code are available here: https://github.com/SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator
-- SolidBench.js: The centralized repository integrated all changes. This is updated to include sensible default configurations which are also used
-for all experiments in the paper.
-Documentation and code are available here: https://github.com/SolidBench/SolidBench.js
+The experiments producing the paper's main results are available at:
+> https://github.com/RubenEschauzier/experiments-link-traversal-caching-random-query-sequences
 
-Finally the source code for the caching implementations is located here:
-https://github.com/RubenEschauzier/comunica-feature-link-traversal/tree/feature/http-caching-adaptive-join
-Which requires an updated version of Comunica, located here:
-https://github.com/RubenEschauzier/comunica/tree/feature/caching-adaptive-join
+Each experiment lives on a dedicated branch with a self-contained README requiring minimal setup.
 
-To run these locally, you need to follow the official Comunica documentation here: https://comunica.dev/docs/modify/advanced/linking_local_version/#yarn-workspaces
-The docker image used in all experiments is `rubeneschauzier/comunica-feature-link-traversal-caching:dev`.
-The index digest for the experiment version is: `sha256:9cacaab6409ec5abd289675ff5db83b08508cfc407c51bac4ef8de2b2bb711c8`.
+| Branch | Description |
+|---|---|
+| `experiment/cache` | **Unindexed Cache** — produces data for all three cache sizes |
+| `experiment/query-cache` | **Indexed Cache** — produces data for all three cache sizes |
+| `experiment/query-cache-estimate` | **Indexed Cache + Cardinality Estimation** — produces data for all three cache sizes |
+| `experiment/synthetic-cache-hitrate` | Synthetic hit rate data for the **Unindexed Cache** |
+| `experiment/synthetic-query-cache-hitrate` | Synthetic hit rate data for the **Indexed Cache** |
+
+For the comparison experiments using **random query sequences** (Section 4.4 of the paper):
+> https://github.com/RubenEschauzier/experiments-link-traversal-caching-random-query-sequences
+
+These use the same three cache branches listed above (`experiment/cache`, `experiment/query-cache`, `experiment/query-cache-estimate`).
+
+**Raw data** from all experiments is archived on Zenodo:
+> https://zenodo.org/records/20056413
+
+**Data processing and figure/table generation** is handled by:
+> https://github.com/RubenEschauzier/process-raw-caching-jbr-output
+
+---
+
+## Benchmark Source Code
+
+SolidSessionBench extends three components of the SolidBench ecosystem. The changes are integrated into the upstream repositories via open pull requests.
+
+| Component | Description | Repository |
+|---|---|---|
+| **SolidBench.js** | Centralized runner integrating all changes; includes sensible default configurations used throughout the paper | [SolidBench/SolidBench.js](https://github.com/SolidBench/SolidBench.js) |
+| **sparql-query-parameter-instantiator** | Main updated codebase; implements the correlated query sequence generation logic (logical sessions, interest-based instantiation, and refinement patterns) | [SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator](https://github.com/SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator) |
+| **ldbc-snb-enhancer** | Updated to compute and export interest-based similarity scores between users and their posts, enabling realistic data locality in generated sequences | [SolidBench/ldbc-snb-enhancer.js#similarity-configuration](https://github.com/SolidBench/ldbc-snb-enhancer.js#similarity-configuration) |
+| **rdf-dataset-fragmenter** | Updated to output both original and transformed terms within a quad, enabling fragmented query strings to be mapped back to executable queries over the original SNB dataset | [SolidBench/rdf-dataset-fragmenter.js#transform-callbacks](https://github.com/SolidBench/rdf-dataset-fragmenter.js#transform-callbacks) |
+
+---
+
+## Caching Implementation
+
+The three caching strategies evaluated in the paper are implemented in a fork of the Comunica LTQP engine:
+
+- **Feature branch:** https://github.com/RubenEschauzier/comunica-feature-link-traversal/tree/feature/http-caching-adaptive-join
+- **Updated Comunica core:** https://github.com/RubenEschauzier/comunica/tree/feature/caching-adaptive-join
+
+To run these locally, follow the [official Comunica documentation on linking a local version](https://comunica.dev/docs/modify/advanced/linking_local_version/#yarn-workspaces).
+
+The Docker image used in all experiments:
+```
+rubeneschauzier/comunica-feature-link-traversal-caching:dev
+```
+Index digest of the exact experiment version:
+```
+sha256:9cacaab6409ec5abd289675ff5db83b08508cfc407c51bac4ef8de2b2bb711c8
+```
