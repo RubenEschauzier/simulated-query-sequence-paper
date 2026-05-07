@@ -2,7 +2,7 @@
 
 This is the paper repository for **SolidSessionBench**, a benchmark that generates realistic query sequences for evaluating client-side query optimization in decentralized environments such as [Solid](https://solidproject.org/).
 
-SolidSessionBench extends [SolidBench](https://github.com/SolidBench/SolidBench.js) to simulate three empirically grounded usage patterns — logical query sessions, user interest-based data locality, and iterative query refinement — that isolated single-query benchmarks fail to capture.
+SolidSessionBench extends [SolidBench](https://github.com/SolidBench/SolidBench.js) to simulate three empirically grounded usage patterns, logical query sessions, user interest-based data locality, and iterative query refinement, that isolated single-query benchmarks fail to capture.
 To demonstrate the benchmark's utility, the paper evaluates three baseline client-side HTTP caching strategies in [Link Traversal-based Query Processing (LTQP)](https://linkeddatafragments.org/in-depth/link-traversal/).
 
 This repository serves as a central hub linking to the source code, experiment setups, and raw data associated with the paper.
@@ -12,15 +12,15 @@ This repository serves as a central hub linking to the source code, experiment s
 ## Reproducible Experiments
 
 The experiments producing the paper's main results are available at:
-> https://github.com/RubenEschauzier/experiments-link-traversal-caching-random-query-sequences
+> https://github.com/RubenEschauzier/experiments-link-traversal-caching
 
 Each experiment lives on a dedicated branch with a self-contained README requiring minimal setup.
 
 | Branch | Description |
 |---|---|
-| `experiment/cache` | **Unindexed Cache** — produces data for all three cache sizes |
-| `experiment/query-cache` | **Indexed Cache** — produces data for all three cache sizes |
-| `experiment/query-cache-estimate` | **Indexed Cache + Cardinality Estimation** — produces data for all three cache sizes |
+| `experiment/cache` | **Unindexed Cache**: produces data for all three cache sizes |
+| `experiment/query-cache` | **Indexed Cache**: produces data for all three cache sizes |
+| `experiment/query-cache-estimate` | **Indexed Cache + Cardinality Estimation**: produces data for all three cache sizes |
 | `experiment/synthetic-cache-hitrate` | Synthetic hit rate data for the **Unindexed Cache** |
 | `experiment/synthetic-query-cache-hitrate` | Synthetic hit rate data for the **Indexed Cache** |
 
@@ -39,10 +39,11 @@ These use the same three cache branches listed above (`experiment/cache`, `exper
 
 ## Benchmark Source Code
 
-SolidSessionBench extends three components of the SolidBench ecosystem. The changes are integrated into the upstream repositories via open pull requests.
+SolidSessionBench extends four components of the SolidBench ecosystem and is added to the [jbr.js](https://github.com/rubensworks/jbr.js) benchmark runner. The changes are integrated into the upstream repositories as new versions:
 
 | Component | Description | Repository |
 |---|---|---|
+| **jbr.js** | A ready-to-use benchmark runner which handles the initializiation, generation, and running of SolidSessionBench | [jbr.js](https://github.com/rubensworks/jbr.js/tree/master/packages/experiment-solid-session-bench) |
 | **SolidBench.js** | Centralized runner integrating all changes; includes sensible default configurations used throughout the paper | [SolidBench/SolidBench.js](https://github.com/SolidBench/SolidBench.js) |
 | **sparql-query-parameter-instantiator** | Main updated codebase; implements the correlated query sequence generation logic (logical sessions, interest-based instantiation, and refinement patterns) | [SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator](https://github.com/SolidBench/sparql-query-parameter-instantiator.js#query-sequence-instantiator) |
 | **ldbc-snb-enhancer** | Updated to compute and export interest-based similarity scores between users and their posts, enabling realistic data locality in generated sequences | [SolidBench/ldbc-snb-enhancer.js#similarity-configuration](https://github.com/SolidBench/ldbc-snb-enhancer.js#similarity-configuration) |
