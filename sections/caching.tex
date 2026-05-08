@@ -80,7 +80,7 @@ mitigates the high network latency inherent to LTQP.
 
 For our experiments, we use the Comunica LTQP engine~\cite{taelman2018comunica,taelman2023link}. 
 As a \\JavaScript-based engine, it relies on the event loop to asynchronously interleave traversal and local query execution. 
-To validate the SolidSessionBench sequences, we integrated three caching approaches into this architecture. 
+We validate the SolidSessionBench sequences by integrating three LRU-based caching approaches into this architecture.
 These approaches cache dereferenced triples in-memory to reduce latency, and we evaluate their impact by comparing three configurations:
 
 
@@ -102,6 +102,7 @@ with Comunica's cost-based optimizer~\cite{taelman2018comunica} to generate more
 
 We evaluate three cache capacities: small (350k quads, $\sim$10\% of the dataset), 
 medium (700k, $\sim$20\%), and large (1.4M, $\sim$40\%). 
+% All cache implementations use the LRU eviction policy.
 
 Our implementations adhere to the RFC-9111 specification~\cite{fielding2022rfc}, 
 meaning the cache correctly interprets standard HTTP headers (e.g., Cache-Control) 
