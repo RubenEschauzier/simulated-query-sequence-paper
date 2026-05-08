@@ -71,21 +71,6 @@ $ v_{k} = (x_{k,1}, \dots, x_{k,n}, y_{k,1}, \dots, y_{k,m})$,
 where $x_{k,j}=1$ if user $k$ holds stated interest $j$, and $y_{k,l}=1$ 
 if user $k$ completed study $l$.
 
-% For each sequence, we randomly select a base person $k$ and compute the cosine similarity 
-% between $v_{k}$ and the feature vectors of all other users in the dataset.
-% We then select template instantiation values probabilistically based on these 
-% similarity scores by applying a softmax function with a temperature parameter $T$:
-
-% \begin{equation}
-%    P(c_{i,k}) = \frac{e^{s_i / T}}{\sum_{j=1}^{N} e^{s_j / T}},
-% \end{equation}
-
-% where $s_i$ is the similarity score for candidate person $i$.
-% To maintain efficiency at large scale factors, we restrict this operation to the top $N$ ranked candidates. 
-% For templates requiring non-person values (e.g., posts or activities),
-% selection probabilities are derived from the similarity scores of the content's creators.  
-
-%%%%%%%%%%%%
 For each sequence, we randomly select a base person $k$ and compute the cosine similarity 
 between $v_{k}$ and the feature vectors of all other users.
 Let $N$ be the total number of users. To maintain efficiency at large scale factors, 
@@ -101,7 +86,6 @@ with temperature $T$:
 where $s_{k,i}$ is the similarity score between base person $k$ and candidate $i \in C_{k,M}$. 
 For templates requiring non-person values (e.g., posts or activities),
 selection probabilities are derived from the similarity scores of the content's creators.
-%%%%%%%%%%%%
 
 \subsubsection{Refinement Patterns}
 
@@ -110,15 +94,6 @@ The benchmark simulates query refinement by randomly applying composable
 transformations to an instantiated query template. 
 Following our literature review, we specifically focus on transformations, and their reciprocal counterparts, that
 add or modify BGPs, OPTIONALs, UNIONs, and query instantiation values.
-
-% To ensure transformations meaningfully alter query execution rather than superficially appending triples,
-% we apply a choke point-based design methodology~\cite{angles2014linked}. 
-% The generator sequentially applies refinements to a base SolidSessionBench template.
-% By mapping empirical exploratory usage patterns~\cite{arenas2025exploring}, outlined in Section \ref{sec:related_work_qup}, directly to
-% planning (P) and traversal (T) choke points, we translate emperical findings to 
-% (TODO How to link this description? The idea is to say we map from emperical findings to patterns and challenges that are challenging for engines)
-% benchmarking targets.
-% These choke points build on the choke points outlined in SolidBench~\cite{taelman2023link,taelman2023evaluation}:
 
 To ensure transformations meaningfully alter query execution rather than superficially appending triples, 
 we apply a choke point-based design methodology~\cite{angles2014linked}. 
@@ -153,83 +128,12 @@ corresponding to SolidBench choke points L.1--L.6~\cite{taelman2023evaluation};
 and \textbf{T.4} alters the usability of structural indexes, such as
 type indexes, corresponding to SolidBench choke point L.8~\cite{taelman2023evaluation}.
 
-
-% To ensure these transformations meaningfully alter query execution characteristics, rather 
-% than superficially appending triples that maintain a one-to-one relation with the result 
-% set, we apply a choke point-based design methodology~\cite{angles2014linked}. 
-% Specifically, we define several planning choke points for client-side query 
-% optimization in decentralized environments, building on the original SolidBench 
-% choke points~\cite{taelman2023link}: 
-% \textbf{P.1} involves adding or removing a \texttt{FILTER}, which requires 
-% prior knowledge to adjust query plans and estimate selectivity; 
-% \textbf{P.2} addresses adding or removing \texttt{UNION} or \texttt{OPTIONAL} 
-% clauses to alter filter push-down capabilities; 
-% \textbf{P.3} covers adding or removing selective triple patterns; 
-% and \textbf{P.4} focuses on adding or removing non-selective triple patterns.
-
-% Beyond planning, these refinements also impact traversal processes. 
-% We identify the following traversal choke points: 
-% \textbf{T.1} expands or contracts the reachable sub-web through predicate additions; 
-% \textbf{T.2} shifts the sub-web by substituting the traversal starting point; 
-% \textbf{T.3} changes the number of hops required to obtain relevant data, 
-% corresponding to SolidBench choke points L.1--L.6~\cite{taelman2023evaluation}; 
-% and \textbf{T.4} alters the usability of structural indexes, such as 
-% type indexes, corresponding to SolidBench choke point L.8~\cite{taelman2023evaluation}.
-
-% The generator sequentially applies these refinements to a base SolidSessionBench query template. 
-% By default, every refinement pattern includes a reciprocal "undo" operation.
-% The supported refinement operators include (1) adding new OPTIONAL and UNION blocks 
-% or inserting triples into existing ones (including specific UNION branches);
-% (2) adding new triple patterns to existing Basic Graph Patterns (BGPs),
-% which define the core graph-matching logic of a SPARQL query;
-% (3) appending new query constraints via FILTER statements;
-% and (4) substituting template instantiation values to begin traversal from a different seed document.
-
 The generator supports variable instantiation within refinements, allowing users 
 to bind pattern variables to specific values randomly selected from candidates provided through configuration files. 
 Users can define custom query refinement patterns using JSON files to augment the provided 
 default configurations. These defaults, along with documentation and pattern descriptions, 
-are available on GitHub: https://github.com/RubenEschauzier/SolidBench.js/tree/feature/\\user-based-query-sequences/templates/refinements.
-% \footnote{https://github.com/RubenEschauzier/SolidBench.js/tree/feature/user-based-query-sequences/templates/refinements}
-
-% Through this flexible generator, we explicitly simulate the empirical exploratory usage patterns~\cite{arenas2025exploring} 
-% identified in Section~\ref{sec:related_work_qup}.
-% We map these empirical patterns directly to our composable query transformations and choke points:
-% (1) we simulate result refinement by adding or removing FILTER constraints 
-% and selective triple patterns in the BGP to adjust query selectivity (Choke points P.1, P.3);
-% (2) we replicate result generalization by adding new triples to existing BGPs 
-% (Choke points P.3, P.4);
-% (3) we simulate result extension by adding triple patterns to BGPs, OPTIONAL blocks, and UNION blocks (Choke points P.3, P.4, P.2);
-% and (4) we model query refinement by adding or removing OPTIONAL and UNION blocks (Choke point P.2).
-% Because our refinement rules are fully composable,
-% the generator aligns with the empirical observation that these exploratory patterns 
-% are not mutually exclusive and frequently co-occur within a single session.
-
-% Through this flexible generator, we explicitly simulate the empirical exploratory 
-% usage patterns~\cite{arenas2025exploring} identified in Section~\ref{sec:related_work_qup}. 
-% We map these empirical patterns directly to our composable query transformations and 
-% choke points:
-
-% \begin{itemize}
-%     \item \textbf{Result Refinement:} We simulate this by adding or removing 
-%     \texttt{FILTER} constraints and selective triple patterns in the BGP to adjust 
-%     query selectivity (Choke points P.1, P.3).
-    
-%     \item \textbf{Result Generalization:} We replicate this by adding new triples 
-%     to existing BGPs (Choke points P.3, P.4), mirroring how users expand queried 
-%     classes and fetch related entities.
-    
-%     \item \textbf{Result Extension:} We simulate this by adding triple patterns 
-%     to BGPs, \texttt{OPTIONAL} blocks, and \texttt{UNION} blocks (Choke points P.3, P.4, P.2).
-    
-%     \item \textbf{Query Refinement:} We model this through the addition or removal 
-%     of \texttt{OPTIONAL} and \texttt{UNION} blocks (Choke point P.2).
-% \end{itemize}
-
-% As our refinement rules are fully composable, 
-% the generator naturally reflects the empirical observation that 
-% exploratory patterns are not mutually exclusive and frequently co-occur within a single 
-% session.
+are available on \href{https://github.com/SolidBench/SolidBench.js/tree/master/templates/refinements}{GitHub}.
+\footnote{\url{https://github.com/SolidBench/SolidBench.js/tree/master/templates/refinements}} 
 
 \subsection{Hyperparameters}
 
